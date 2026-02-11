@@ -32,9 +32,9 @@
 }
 
 .day-number {
-  font-size: 2.4rem;
+  font-size: 1.8rem;
   font-weight: 900;
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Michroma', sans-serif;
   line-height: 1;
   color: #fff;
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
@@ -53,7 +53,7 @@
 }
 
 .day-name {
-  font-size: 1.7rem;
+  font-size: 1.3rem;
   font-weight: 800;
   margin-bottom: 4px;
   font-family: 'Inter', sans-serif;
@@ -126,7 +126,7 @@
 }
 
 .event-time-main {
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Michroma', sans-serif;
   font-size: 1.2rem;
   font-weight: 700;
   color: #FF8C00;
@@ -138,7 +138,7 @@
 .event-stardate {
   font-size: 0.75rem;
   opacity: 0.8;
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Michroma', sans-serif;
   font-weight: 500;
 }
 
@@ -152,7 +152,7 @@
 }
 
 .event-title {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: 700;
   font-family: 'Inter', sans-serif;
   line-height: 1.3;
