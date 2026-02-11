@@ -1,0 +1,116 @@
+.header-container {
+  position: relative;
+  padding: 20px 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.lcars-top-bar {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  padding: 0 20px;
+  margin-bottom: 15px;
+}
+
+.lcars-bar {
+  flex: 1;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  border-radius: 20px;
+}
+
+.lcars-bar h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #FF8C00, #FFED00, #00D4FF, #9333EA);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 20px;
+  gap: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+}
+
+nav {
+  flex: 1;
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+
+nav a {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+nav a:hover {
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+nav a::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #E40303, #FF8C00, #FFED00, #008026, #24408E, #732982);
+  transition: width 0.3s ease;
+}
+
+nav a:hover::after,
+nav a.active::after {
+  width: 100%;
+}
+
+.stardate {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.85rem;
+  opacity: 0.7;
+  letter-spacing: 1px;
+}
+
+@media (max-width: 768px) {
+  .lcars-top-bar {
+    flex-wrap: wrap;
+  }
+  
+  .lcars-bar h1 {
+    font-size: 1.2rem;
+  }
+  
+  .nav-container {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .lcars-nav-cap {
+    display: none;
+  }
+  
+  nav {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
