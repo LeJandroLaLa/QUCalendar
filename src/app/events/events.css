@@ -175,20 +175,6 @@
   margin-top: auto;
 }
 
-.event-badge {
-  background: linear-gradient(135deg, rgba(236, 72, 153, 0.8), rgba(147, 51, 234, 0.8));
-  padding: 9px 16px;
-  border-radius: 16px;
-  font-size: 0.9rem;
-  font-weight: 700;
-  white-space: nowrap;
-  align-self: flex-start;
-  font-family: 'Inter', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 3px 10px rgba(147, 51, 234, 0.4);
-}
-
 @media (max-width: 768px) {
   .day-header {
     flex-wrap: wrap;
