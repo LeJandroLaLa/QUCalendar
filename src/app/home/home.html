@@ -1,116 +1,63 @@
 <div class="container">
   <div class="hero">
-    <h2>QU Calendar — Your Non-Profit LGBTQ+ Event Hub</h2>
+    <h2>QU Calendar — Your Non-Profit <span class="hero-accent">LGBTQ+</span> Event Hub</h2>
     <p>A unified hub for discovering the plethora of gatherings put on by and for any of our communities across Cincinnati, Northern Kentucky... and beyond.</p>
- </div>
+  </div>
 
   <div class="filter-section">
     <div class="filter-inputs">
       <div class="input-group">
         <span class="input-icon">📍</span>
-        <input type="text" placeholder="Location" class="filter-input">
+        <input type="text"
+               placeholder="Location"
+               class="filter-input"
+               [ngModel]="locationQuery()"
+               (ngModelChange)="locationQuery.set($event)">
       </div>
       <div class="input-group">
-        <input type="text" placeholder="mm / dd / yyyy" class="filter-input date-input">
+        <input type="text"
+               placeholder="mm / dd / yyyy"
+               class="filter-input date-input"
+               [ngModel]="dateQuery() === 'weekend' ? 'Weekend' : dateQuery()"
+               (ngModelChange)="dateQuery.set($event)">
         <span class="input-icon-right">📅</span>
       </div>
-      <button class="filter-btn secondary">Today</button>
-      <button class="filter-btn secondary">Weekend</button>
-      <button class="filter-btn secondary">Clear</button>
+      <button class="filter-btn secondary" (click)="setToday()"
+              [class.active-filter]="dateQuery() && dateQuery() !== 'weekend'">Today</button>
+      <button class="filter-btn secondary" (click)="setWeekend()"
+              [class.active-filter]="dateQuery() === 'weekend'">Weekend</button>
+      <button class="filter-btn secondary" (click)="clearFilters()">Clear</button>
       <button class="filter-btn primary">Filter</button>
     </div>
-    
+
     <div class="event-type-section">
-      <button class="event-type-toggle">▼ Filter by Event Type</button>
-      <div class="event-type-grid">
-        <div class="event-type-item">
-          <div class="event-icon">🌟</div>
-          <div class="event-label">Nightlife</div>
-        </div>
-        <div class="event-type-item">
-          <div class="event-icon">💃</div>
-          <div class="event-label">Drag</div>
-        </div>
-        <div class="event-type-item">
-          <div class="event-icon">👕</div>
-          <div class="event-label">Fashion</div>
-        </div>
-        <div class="event-type-item">
-          <div class="event-icon">💰</div>
-          <div class="event-label">Fundraiser</div>
-        </div>
-        <div class="event-type-item">
-          <div class="event-icon">🎤</div>
-          <div class="event-label">Karaoke</div>
-        </div>
-        <div class="event-type-item">
-          <div class="event-icon">🔗</div>
-          <div class="event-label">Leather</div>
-        </div>
-        <div class="event-type-item">
-          <div class="event-icon">🎬</div>
-          <div class="event-label">Movies</div>
-        </div>
-        <div class="event-type-item">
-          <div class="event-icon">🤝</div>
-          <div class="event-label">Community</div>
-        </div>
-        <div class="event-type-item">
-          <div class="event-icon">✈️</div>
-          <div class="event-label">Travel</div>
-        </div>
-        <div class="event-type-item">
-          <div class="event-icon">🥞</div>
-          <div class="event-label">Brunch</div>
-        </div>
-        <div class="event-type-item">
-          <div class="event-icon">⚽</div>
-          <div class="event-label">Sports</div>
-        </div>
-        <div class="event-type-item">
-          <div class="event-icon">🎵</div>
-          <div class="event-label">Live Show</div>
-        </div>
-        <div class="event-type-item">
-          <div class="event-icon">✨</div>
-          <div class="event-label">Sober</div>
-        </div>
-        <div class="event-type-item">
-          <div class="event-icon">💼</div>
-          <div class="event-label">Workshop</div>
-        </div>
-        <div class="event-type-item">
-          <div class="event-icon">🏞️</div>
-          <div class="event-label">Outdoors</div>
-        </div>
-        <div class="event-type-item">
-          <div class="event-icon">🧘</div>
-          <div class="event-label">Wellness</div>
-        </div>
-        <div class="event-type-item">
-          <div class="event-icon">🎧</div>
-          <div class="event-label">DJ Sets</div>
-        </div>
-        <div class="event-type-item">
-          <div class="event-icon">📸</div>
-          <div class="event-label">Art/Photo</div>
-        </div>
-        <div class="event-type-item">
-          <div class="event-icon">📅</div>
-          <div class="event-label">Multi-Day</div>
-        </div>
-        <div class="event-type-item">
-          <div class="event-icon">💬</div>
-          <div class="event-label">Trivia</div>
+      <button class="event-type-toggle" (click)="toggleEventTypes()">
+        {{ showEventTypes() ? '▼' : '▶' }} Filter by Event Type
+        <span class="active-count" *ngIf="selectedCategories().length > 0">
+          ({{ selectedCategories().length }} active)
+        </span>
+      </button>
+      <div class="event-type-grid" *ngIf="showEventTypes()">
+        <div class="event-type-item"
+             *ngFor="let cat of allCategories; let i = index"
+             (click)="toggleCategory(cat)"
+             [class.selected]="isCategorySelected(cat)">
+          <div class="event-icon">{{ getCategoryIcon(cat) }}</div>
+          <div class="event-label">{{ cat }}</div>
         </div>
       </div>
     </div>
   </div>
 
   <div class="view-toggle">
-    <button class="active">Calendar View</button>
-    <button>List View</button>
+    <button [class.active]="activeView() === 'calendar'" (click)="setView('calendar')">Calendar View</button>
+    <button [class.active]="activeView() === 'list'" (click)="setView('list')">List View</button>
   </div>
 
-  <app-events></app-events>
+  <app-events
+    [locationFilter]="locationQuery()"
+    [dateFilter]="dateQuery()"
+    [categoryFilter]="selectedCategories()"
+    [viewMode]="activeView()">
+  </app-events>
 </div>

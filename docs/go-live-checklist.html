@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QU Calendar — Go Live Checklist</title>
+  <style>
+    @media print {
+      body { font-size: 11pt; }
+      .no-print { display: none; }
+      .checklist-group { break-inside: avoid; }
+      .toolbar { display: none; }
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      max-width: 750px;
+      margin: 0 auto;
+      padding: 40px 30px;
+      color: #1a1a1a;
+      line-height: 1.5;
+    }
+
+    /* ---- TOOLBAR ---- */
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .toolbar button {
+      padding: 8px 18px;
+      background: #1a1a1a;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .toolbar button:hover { background: #444; }
+
+    .toolbar .danger { background: #c0392b; }
+    .toolbar .danger:hover { background: #e74c3c; }
+
+    /* ---- PROGRESS BAR ---- */
+    .progress-bar-container {
+      width: 100%;
+      background: #e0e0e0;
+      border-radius: 10px;
+      height: 20px;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #E40303, #FF8C00, #FFED00, #008026, #24408E, #732982);
+      border-radius: 10px;
+      transition: width 0.4s ease;
+    }
+
+    .progress-text {
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 24px;
+    }
+
+    /* ---- HEADINGS ---- */
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: #666;
+      margin-bottom: 16px;
+      border-bottom: 2px solid #1a1a1a;
+      padding-bottom: 12px;
+    }
+
+    /* ---- SECTION PROGRESS ---- */
+    .section-progress {
+      float: right;
+      font-size: 0.8rem;
+      font-weight: normal;
+      color: #999;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    /* ---- CHECKLIST GROUPS ---- */
+    .checklist-group {
+      margin-bottom: 28px;
+    }
+
+    .checklist-group h2 {
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .checklist-group ul {
+      list-style: none;
+      margin-left: 4px;
+    }
+
+    .checklist-group li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 4px;
+      border-bottom: 1px dotted #e0e0e0;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.15s;
+    }
+
+    .checklist-group li:hover {
+      background: #f5f5f5;
+    }
+
+    .checklist-group li:last-child {
+      border-bottom: none;
+    }
+
+    /* ---- CHECKBOX (real input) ---- */
+    .checklist-group li input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      flex-shrink: 0;
+      cursor: pointer;
+      accent-color: #333;
+    }
+
+    .item-text {
+      flex: 1;
+      user-select: none;
+    }
+
+    .item-text strong {
+      font-weight: 600;
+    }
+
+    .item-text .note {
+      display: block;
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 2px;
+    }
+
+    /* ---- USER NOTES ---- */
+    .notes-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 2px 4px;
+      opacity: 0.4;
+      transition: opacity 0.2s;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .notes-toggle:hover { opacity: 0.8; }
+    .notes-toggle.has-notes { opacity: 0.85; }
+
+    .user-notes {
+      display: none;
+      margin-top: 6px;
+    }
+
+    .user-notes.open {
+      display: block;
+    }
+
+    .user-notes textarea {
+      width: 100%;
+      min-height: 50px;
+      padding: 8px 10px;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.85rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: #fafafa;
+      color: #333;
+      resize: vertical;
+      outline: none;
+      line-height: 1.5;
+      transition: border-color 0.2s;
+    }
+
+    .user-notes textarea:focus {
+      border-color: #999;
+      background: #fff;
+    }
+
+    .user-notes textarea::placeholder {
+      color: #bbb;
+    }
+
+    .notes-preview {
+      font-size: 0.8rem;
+      color: #888;
+      margin-top: 3px;
+      font-style: italic;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 500px;
+    }
+
+    /* Checked state */
+    li.checked .item-text strong {
+      text-decoration: line-through;
+      color: #999;
+    }
+
+    li.checked .item-text .note {
+      color: #bbb;
+    }
+
+    @media print {
+      .notes-toggle { display: none; }
+      .user-notes { display: block !important; }
+      .user-notes textarea { border: none; background: none; min-height: auto; padding: 2px 0; }
+      .notes-preview { display: none; }
+    }
+
+    /* ---- FOOTER ---- */
+    .footer {
+      margin-top: 40px;
+      padding-top: 12px;
+      border-top: 2px solid #1a1a1a;
+      font-size: 0.85rem;
+      color: #999;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* ---- LAST SAVED ---- */
+    .last-saved {
+      font-size: 0.8rem;
+      color: #999;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>QU Calendar — Go Live Checklist</h1>
+  <div class="subtitle">Track progress toward launch &nbsp;|&nbsp; <span class="last-saved" id="lastSaved">Not yet saved</span></div>
+
+  <!-- PROGRESS BAR -->
+  <div class="progress-bar-container">
+    <div class="progress-bar-fill" id="progressBar" style="width: 0%"></div>
+  </div>
+  <div class="progress-text" id="progressText">0 of 0 tasks complete (0%)</div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar no-print">
+    <button onclick="window.print()">🖨️ Print</button>
+    <button onclick="expandAll()">📂 Expand All</button>
+    <button onclick="collapseAll()">📁 Collapse All</button>
+    <button class="danger" onclick="resetAll()">🗑️ Reset All</button>
+  </div>
+
+  <!-- CHECKLIST CONTENT -->
+  <div id="checklist"></div>
+
+  <div class="footer">
+    <span>QU Calendar — Non-Profit LGBTQ+ Event Hub</span>
+    <span>Cincinnati, OH</span>
+  </div>
+
+  <script>
+    // ==========================================
+    // CHECKLIST DATA
+    // ==========================================
+    const sections = [
+      {
+        title: '✅ Completed',
+        id: 'completed',
+        items: [
+          { id: 'branding', label: 'Site branding', note: 'QU Calendar title, Michroma font, rainbow gradient, design system', done: true },
+          { id: 'home-layout', label: 'Home page layout', note: 'Hero section, filter UI, event type grid, view toggle, event cards', done: true },
+          { id: 'font-audit', label: 'Font size audit & hierarchy', note: 'Hero h2, day numbers, event titles, labels — all proportionally adjusted', done: true },
+          { id: 'data-models', label: 'Data models', note: 'TypeScript interfaces: EventProfile, VenueProfile, ArtistProfile, ProfileBase', done: true },
+          { id: 'mock-service', label: 'Mock data service', note: 'ProfileService with 10 events, 3 venues, 3 artists + query methods', done: true },
+          { id: 'profile-component', label: 'Shared profile component', note: 'Reusable profile page for events, venues, and artists', done: true },
+          { id: 'routing', label: 'Routing', note: 'Home (/), Profile pages (/profile/events/:id, /venues/:id, /artists/:id)', done: true },
+          { id: 'card-links', label: 'Event cards linked to profiles', note: 'Clickable cards navigate to event profile pages', done: true },
+          { id: 'profile-mockup', label: 'Profile page mockup', note: 'Standalone HTML mockup for layout tweaking', done: true },
+        ]
+      },
+      {
+        title: '1. Core Functionality',
+        id: 'functionality',
+        items: [
+          { id: 'location-filter', label: 'Location filter', note: 'Text input filters events by venue city/name' },
+          { id: 'date-filter', label: 'Date filter / date picker', note: 'Date input field filters events by specific date' },
+          { id: 'today-btn', label: '"Today" button', note: 'Quick filter: show only today\'s events' },
+          { id: 'weekend-btn', label: '"Weekend" button', note: 'Quick filter: show Saturday + Sunday events' },
+          { id: 'clear-btn', label: '"Clear" button', note: 'Reset all filters to default (show all upcoming)' },
+          { id: 'filter-btn', label: '"Filter" button', note: 'Apply combined location + date + category filters' },
+          { id: 'category-grid', label: 'Event type category grid', note: '20 emoji category buttons toggle category filters' },
+          { id: 'view-toggle', label: 'Calendar / List view toggle', note: 'Switch between calendar grid view and list view' },
+        ]
+      },
+      {
+        title: '2. Pages',
+        id: 'pages',
+        items: [
+          { id: 'events-page', label: 'Events browse page', note: 'Nav "Events" link → dedicated browse/search page for all events' },
+          { id: 'venues-page', label: 'Venues browse page', note: 'Nav "Venues" link → browse all venues' },
+          { id: 'about-page', label: 'About page', note: 'Mission, team, contact info, non-profit details' },
+          { id: 'nav-wired', label: 'Nav links wired up', note: 'All header nav links route to correct pages' },
+        ]
+      },
+      {
+        title: '3. Backend & Data',
+        id: 'backend',
+        items: [
+          { id: 'firebase-setup', label: 'Firebase project setup', note: 'Create Firebase project, configure Firestore database' },
+          { id: 'firebase-sdk', label: 'Firebase SDK integration', note: 'Install @angular/fire, connect to Firestore' },
+          { id: 'swap-mock', label: 'Swap mock service for Firebase', note: 'Replace hardcoded data in ProfileService with Firestore queries' },
+          { id: 'real-events', label: 'Real event data entry', note: 'Populate database with actual Cincinnati LGBTQ+ events' },
+          { id: 'real-venues', label: 'Real venue data entry', note: 'Populate database with actual venue profiles' },
+          { id: 'real-artists', label: 'Real artist data entry', note: 'Populate database with actual artist/performer profiles' },
+          { id: 'admin-panel', label: 'Admin panel or CMS', note: 'Way for organizers to submit/edit events (future phase?)' },
+        ]
+      },
+      {
+        title: '4. Polish & QA',
+        id: 'polish',
+        items: [
+          { id: 'mobile-test', label: 'Mobile responsive testing', note: 'Test all pages on phone/tablet breakpoints with real content' },
+          { id: 'cross-browser', label: 'Cross-browser testing', note: 'Chrome, Firefox, Safari, Edge' },
+          { id: 'a11y', label: 'Accessibility audit', note: 'Screen reader, keyboard nav, color contrast, ARIA labels' },
+          { id: 'perf', label: 'Performance check', note: 'Lighthouse score, lazy loading, image optimization' },
+          { id: 'error-handling', label: '404 / error handling', note: 'Graceful handling of missing profiles, network errors' },
+        ]
+      },
+      {
+        title: '5. Launch',
+        id: 'launch',
+        items: [
+          { id: 'seo', label: 'SEO / meta tags', note: 'Page titles, descriptions, Open Graph tags for social sharing' },
+          { id: 'favicon', label: 'Favicon & branding assets', note: 'Favicon, Apple touch icon, social share image' },
+          { id: 'domain', label: 'Domain name', note: 'Purchase and configure custom domain' },
+          { id: 'hosting', label: 'Hosting setup', note: 'Firebase Hosting / Netlify / Vercel — deploy production build' },
+          { id: 'ssl', label: 'SSL certificate', note: 'HTTPS enabled (usually automatic with hosting providers)' },
+          { id: 'analytics', label: 'Analytics', note: 'Google Analytics or similar for tracking usage' },
+          { id: 'go-live', label: 'Go live! 🚀', note: 'Final review, deploy, announce to community' },
+        ]
+      }
+    ];
+
+    // ==========================================
+    // STATE MANAGEMENT (localStorage)
+    // ==========================================
+    const STORAGE_KEY = 'qu-calendar-checklist';
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : {};
+      } catch { return {}; }
+    }
+
+    function saveState(state) {
+      state._lastSaved = new Date().toISOString();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      updateLastSaved(state._lastSaved);
+    }
+
+    function updateLastSaved(isoStr) {
+      if (!isoStr) return;
+      const d = new Date(isoStr);
+      document.getElementById('lastSaved').textContent =
+        'Last saved: ' + d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
+    }
+
+    // ==========================================
+    // RENDER
+    // ==========================================
+    function render() {
+      const state = loadState();
+      const container = document.getElementById('checklist');
+      container.innerHTML = '';
+
+      let totalItems = 0;
+      let totalChecked = 0;
+
+      sections.forEach(section => {
+        const group = document.createElement('div');
+        group.className = 'checklist-group';
+
+        const sectionChecked = section.items.filter(item =>
+          state[item.id] !== undefined ? state[item.id] : !!item.done
+        ).length;
+
+        totalItems += section.items.length;
+        totalChecked += sectionChecked;
+
+        group.innerHTML = `
+          <h2>
+            ${section.title}
+            <span class="section-progress">${sectionChecked} / ${section.items.length}</span>
+          </h2>
+        `;
+
+        const ul = document.createElement('ul');
+
+        section.items.forEach(item => {
+          const isChecked = state[item.id] !== undefined ? state[item.id] : !!item.done;
+          const li = document.createElement('li');
+          li.className = isChecked ? 'checked' : '';
+
+          const cb = document.createElement('input');
+          cb.type = 'checkbox';
+          cb.checked = isChecked;
+          cb.id = 'cb-' + item.id;
+
+          cb.addEventListener('change', () => {
+            const s = loadState();
+            s[item.id] = cb.checked;
+            saveState(s);
+            li.className = cb.checked ? 'checked' : '';
+            updateProgress();
+          });
+
+          const textDiv = document.createElement('div');
+          textDiv.className = 'item-text';
+
+          const labelHTML = `<strong>${item.label}</strong><span class="note">${item.note}</span>`;
+
+          // User notes from state
+          const userNote = state['_note_' + item.id] || '';
+
+          // Preview line (shows truncated note when collapsed)
+          const previewHTML = userNote
+            ? `<div class="notes-preview">${userNote.split('\n')[0]}</div>`
+            : '';
+
+          // Notes textarea (hidden by default)
+          const notesHTML = `
+            <div class="user-notes" id="notes-${item.id}">
+              <textarea placeholder="Add your notes / reminders here..." id="ta-${item.id}">${userNote}</textarea>
+            </div>
+          `;
+
+          textDiv.innerHTML = labelHTML + previewHTML + notesHTML;
+
+          // Click label (strong/note) to toggle checkbox
+          textDiv.querySelector('strong').addEventListener('click', () => {
+            cb.checked = !cb.checked;
+            cb.dispatchEvent(new Event('change'));
+          });
+          textDiv.querySelector('.note').addEventListener('click', () => {
+            cb.checked = !cb.checked;
+            cb.dispatchEvent(new Event('change'));
+          });
+
+          // Notes toggle button
+          const notesBtn = document.createElement('button');
+          notesBtn.className = 'notes-toggle' + (userNote ? ' has-notes' : '');
+          notesBtn.textContent = '📝';
+          notesBtn.title = 'Add notes';
+          notesBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const notesDiv = document.getElementById('notes-' + item.id);
+            const preview = textDiv.querySelector('.notes-preview');
+            notesDiv.classList.toggle('open');
+            if (notesDiv.classList.contains('open')) {
+              if (preview) preview.style.display = 'none';
+              document.getElementById('ta-' + item.id).focus();
+            } else {
+              if (preview) preview.style.display = '';
+            }
+          });
+
+          // Save notes on input
+          setTimeout(() => {
+            const ta = document.getElementById('ta-' + item.id);
+            if (ta) {
+              ta.addEventListener('input', () => {
+                const s = loadState();
+                s['_note_' + item.id] = ta.value;
+                saveState(s);
+                // Update preview
+                const preview = textDiv.querySelector('.notes-preview');
+                if (ta.value) {
+                  notesBtn.classList.add('has-notes');
+                  if (!preview) {
+                    const p = document.createElement('div');
+                    p.className = 'notes-preview';
+                    p.style.display = 'none';
+                    p.textContent = ta.value.split('\n')[0];
+                    textDiv.querySelector('.user-notes').insertAdjacentElement('beforebegin', p);
+                  } else {
+                    preview.textContent = ta.value.split('\n')[0];
+                  }
+                } else {
+                  notesBtn.classList.remove('has-notes');
+                  if (preview) preview.remove();
+                }
+              });
+            }
+          }, 0);
+
+          li.appendChild(cb);
+          li.appendChild(textDiv);
+          li.appendChild(notesBtn);
+          ul.appendChild(li);
+        });
+
+        group.appendChild(ul);
+        container.appendChild(group);
+      });
+
+      updateProgressBar(totalChecked, totalItems);
+      updateLastSaved(state._lastSaved);
+    }
+
+    function updateProgress() {
+      const state = loadState();
+      let total = 0, checked = 0;
+
+      sections.forEach(section => {
+        section.items.forEach(item => {
+          total++;
+          const isChecked = state[item.id] !== undefined ? state[item.id] : !!item.done;
+          if (isChecked) checked++;
+        });
+
+        // Update section progress
+        const groups = document.querySelectorAll('.checklist-group');
+        groups.forEach(g => {
+          const h2 = g.querySelector('h2');
+          if (h2 && h2.textContent.includes(section.title.replace(/[✅]/g, '').trim())) {
+            const sChecked = section.items.filter(item =>
+              state[item.id] !== undefined ? state[item.id] : !!item.done
+            ).length;
+            const sp = h2.querySelector('.section-progress');
+            if (sp) sp.textContent = `${sChecked} / ${section.items.length}`;
+          }
+        });
+      });
+
+      updateProgressBar(checked, total);
+    }
+
+    function updateProgressBar(checked, total) {
+      const pct = total > 0 ? Math.round((checked / total) * 100) : 0;
+      document.getElementById('progressBar').style.width = pct + '%';
+      document.getElementById('progressText').textContent =
+        `${checked} of ${total} tasks complete (${pct}%)`;
+    }
+
+    // ==========================================
+    // TOOLBAR ACTIONS
+    // ==========================================
+    function resetAll() {
+      if (confirm('Reset all checkboxes and notes? This cannot be undone.')) {
+        localStorage.removeItem(STORAGE_KEY);
+        render();
+      }
+    }
+
+    function expandAll() {
+      document.querySelectorAll('.checklist-group').forEach(g => g.style.display = '');
+    }
+
+    function collapseAll() {
+      const groups = document.querySelectorAll('.checklist-group');
+      groups.forEach((g, i) => {
+        // Keep first (completed) visible, collapse others
+        if (i > 0) g.style.display = g.style.display === 'none' ? '' : 'none';
+      });
+    }
+
+    // ==========================================
+    // INIT
+    // ==========================================
+    render();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QU Calendar — Profile Mockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Michroma&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ========================================
+       RESET & BASE
+       ======================================== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a1a;
+      min-height: 100vh;
+      color: #ffffff;
+    }
+
+    /* ========================================
+       HEADER (matches your existing header)
+       ======================================== */
+    .header-container {
+      position: relative;
+      padding: 20px 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .lcars-top-bar {
+      display: flex;
+      align-items: stretch;
+      gap: 8px;
+      padding: 0 20px;
+      margin-bottom: 15px;
+    }
+
+    .lcars-bar {
+      flex: 1;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      border-radius: 20px;
+    }
+
+    .lcars-bar h1 {
+      font-family: 'Michroma', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, #FF8C00, #FFED00, #00D4FF, #9333EA);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px 20px;
+      gap: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      margin: 0 20px;
+    }
+
+    nav {
+      flex: 1;
+      display: flex;
+      gap: 30px;
+      align-items: center;
+    }
+
+    nav a {
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    nav a:hover {
+      color: #ffffff;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #E40303, #FF8C00, #FFED00, #008026, #24408E, #732982);
+      transition: width 0.3s ease;
+    }
+
+    nav a:hover::after { width: 100%; }
+
+    .stardate {
+      font-family: 'Michroma', sans-serif;
+      font-size: 0.85rem;
+      opacity: 0.7;
+      letter-spacing: 1px;
+    }
+
+    /* ========================================
+       CONTAINER
+       ======================================== */
+    .container {
+      max-width: 90%;
+      margin: 0 auto;
+      padding: 40px;
+      width: 100%;
+    }
+
+    /* ========================================
+       PROFILE BANNER
+       ======================================== */
+    .profile-banner {
+      width: 100%;
+      height: 280px;
+      border-radius: 20px 20px 0 0;
+      overflow: hidden;
+      position: relative;
+      background: linear-gradient(135deg, rgba(236, 72, 153, 0.4), rgba(147, 51, 234, 0.4), rgba(0, 212, 255, 0.3));
+    }
+
+    .profile-banner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Placeholder gradient when no image */
+    .profile-banner.no-image {
+      background: linear-gradient(135deg, #E40303, #FF8C00, #FFED00, #008026, #24408E, #732982);
+      opacity: 0.6;
+    }
+
+    .profile-type-badge {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      font-family: 'Michroma', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 20px;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    /* ========================================
+       PROFILE HEADER CARD
+       ======================================== */
+    .profile-header-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 0 0 20px 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-top: none;
+      padding: 30px;
+      margin-bottom: 30px;
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+    }
+
+    .profile-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 16px;
+      border: 3px solid rgba(255, 255, 255, 0.4);
+      overflow: hidden;
+      flex-shrink: 0;
+      margin-top: -60px;
+      background: linear-gradient(135deg, rgba(236, 72, 153, 0.5), rgba(147, 51, 234, 0.5));
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+    }
+
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-info {
+      flex: 1;
+    }
+
+    .profile-name {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+
+    .profile-tagline {
+      font-size: 1.1rem;
+      opacity: 0.8;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .profile-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .profile-tag {
+      font-family: 'Michroma', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.5px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      transition: all 0.3s ease;
+    }
+
+    .profile-tag:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .profile-social-links {
+      display: flex;
+      gap: 12px;
+    }
+
+    .social-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+      color: #00D4FF;
+      text-decoration: none;
+      padding: 6px 14px;
+      border-radius: 10px;
+      background: rgba(0, 212, 255, 0.1);
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .social-link:hover {
+      background: rgba(0, 212, 255, 0.2);
+      box-shadow: 0 0 12px rgba(0, 212, 255, 0.3);
+    }
+
+    /* ========================================
+       PROFILE DETAILS GRID
+       ======================================== */
+    .profile-details-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 30px;
+    }
+
+    .detail-card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .detail-card-full {
+      grid-column: 1 / -1;
+    }
+
+    .detail-card h3 {
+      font-family: 'Michroma', sans-serif;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      opacity: 0.7;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .detail-card p {
+      font-size: 1rem;
+      line-height: 1.7;
+      opacity: 0.9;
+    }
+
+    /* Contact info list */
+    .contact-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .contact-list li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.95rem;
+    }
+
+    .contact-list li span.icon {
+      font-size: 1.2rem;
+      width: 28px;
+      text-align: center;
+    }
+
+    .contact-list li a {
+      color: #00D4FF;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .contact-list li a:hover {
+      text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+    }
+
+    /* ========================================
+       EVENT-SPECIFIC: DATE & TIME
+       ======================================== */
+    .event-datetime {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .event-date-box {
+      background: linear-gradient(135deg, rgba(236, 72, 153, 0.3), rgba(147, 51, 234, 0.3));
+      border-radius: 14px;
+      padding: 14px 18px;
+      text-align: center;
+      min-width: 75px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .event-date-number {
+      font-family: 'Michroma', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 900;
+      line-height: 1;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    }
+
+    .event-date-month {
+      font-size: 0.85rem;
+      font-weight: 700;
+      opacity: 0.9;
+      margin-top: 3px;
+      letter-spacing: 0.5px;
+    }
+
+    .event-time-info {
+      flex: 1;
+    }
+
+    .event-time-display {
+      font-family: 'Michroma', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #FF8C00;
+      text-shadow: 0 2px 6px rgba(255, 140, 0, 0.5);
+      margin-bottom: 4px;
+    }
+
+    .event-day-name {
+      font-size: 1.1rem;
+      opacity: 0.8;
+    }
+
+    .event-price {
+      font-family: 'Michroma', sans-serif;
+      font-size: 1rem;
+      padding: 10px 20px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, rgba(255, 140, 0, 0.8), rgba(255, 69, 0, 0.8));
+      box-shadow: 0 3px 12px rgba(255, 140, 0, 0.4);
+    }
+
+    /* ========================================
+       VENUE-SPECIFIC: HOURS & MAP
+       ======================================== */
+    .hours-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .hours-list li {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.95rem;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .hours-list li .day {
+      font-weight: 600;
+      opacity: 0.9;
+    }
+
+    .hours-list li .time {
+      font-family: 'Michroma', sans-serif;
+      font-size: 0.8rem;
+      color: #FF8C00;
+      letter-spacing: 0.5px;
+    }
+
+    .map-placeholder {
+      width: 100%;
+      height: 200px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px dashed rgba(255, 255, 255, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      opacity: 0.5;
+    }
+
+    /* ========================================
+       ARTIST-SPECIFIC: PERFORMANCE TYPE
+       ======================================== */
+    .performance-types {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .performance-type {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, rgba(236, 72, 153, 0.3), rgba(147, 51, 234, 0.3));
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    /* ========================================
+       PAST EVENTS SECTION
+       ======================================== */
+    .section-title {
+      font-family: 'Michroma', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .past-events-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .past-event-card {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 24px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+      border-radius: 16px;
+      border-left: 4px solid;
+      border-image: linear-gradient(180deg, #E40303, #FF8C00, #FFED00, #008026, #24408E, #732982) 1;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+    }
+
+    .past-event-card:hover {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.08));
+      transform: translateY(-4px);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
+    }
+
+    .past-event-date {
+      font-family: 'Michroma', sans-serif;
+      font-size: 0.75rem;
+      opacity: 0.7;
+      letter-spacing: 0.5px;
+    }
+
+    .past-event-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .past-event-venue {
+      font-size: 0.95rem;
+      color: #00D4FF;
+      opacity: 0.85;
+    }
+
+    .past-event-icons {
+      display: flex;
+      gap: 10px;
+      font-size: 1.2rem;
+      margin-top: auto;
+    }
+
+    /* ========================================
+       FOOTER
+       ======================================== */
+    footer {
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      border-top: 2px solid rgba(255, 255, 255, 0.2);
+      padding: 25px 20px;
+      margin-top: 40px;
+      text-align: center;
+      font-size: 0.85rem;
+      opacity: 0.7;
+    }
+
+    /* ========================================
+       PROFILE TYPE SWITCHER (for mockup only)
+       ======================================== */
+    .mockup-switcher {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      justify-content: center;
+    }
+
+    .mockup-switcher button {
+      padding: 10px 20px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .mockup-switcher button:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .mockup-switcher button.active {
+      background: linear-gradient(135deg, rgba(236, 72, 153, 0.6), rgba(147, 51, 234, 0.6));
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .profile-section { display: none; }
+    .profile-section.active { display: block; }
+
+    /* ========================================
+       RESPONSIVE
+       ======================================== */
+    @media (max-width: 768px) {
+      .container { padding: 20px; }
+      .profile-banner { height: 180px; }
+      .profile-header-card { flex-direction: column; align-items: center; text-align: center; }
+      .profile-avatar { margin-top: -50px; }
+      .profile-name { font-size: 1.5rem; }
+      .profile-details-grid { grid-template-columns: 1fr; }
+      .profile-social-links { justify-content: center; flex-wrap: wrap; }
+      .profile-tags { justify-content: center; }
+      .event-datetime { flex-wrap: wrap; }
+      .past-events-grid { grid-template-columns: 1fr; }
+      .lcars-bar h1 { font-size: 1.2rem; }
+      .nav-container { flex-direction: column; gap: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================
+       HEADER
+       ======================================== -->
+  <header class="header-container">
+    <div class="lcars-top-bar">
+      <div class="lcars-bar">
+        <h1>QU Calendar</h1>
+      </div>
+    </div>
+    <div class="nav-container">
+      <nav>
+        <a href="#">Calendar</a>
+        <a href="#">Events</a>
+        <a href="#">Venues</a>
+        <a href="#">About</a>
+      </nav>
+      <div class="stardate">Stardate 2026.120</div>
+    </div>
+  </header>
+
+  <!-- ========================================
+       MAIN CONTENT
+       ======================================== -->
+  <div class="container">
+
+    <!-- Mockup-only switcher to preview all 3 types -->
+    <div class="mockup-switcher">
+      <button class="active" onclick="switchProfile('event')">Event Profile</button>
+      <button onclick="switchProfile('venue')">Venue Profile</button>
+      <button onclick="switchProfile('artist')">Artist Profile</button>
+    </div>
+
+    <!-- ==============================
+         EVENT PROFILE
+         ============================== -->
+    <div id="profile-event" class="profile-section active">
+      <div class="profile-banner no-image">
+        <span class="profile-type-badge">Event</span>
+      </div>
+      <div class="profile-header-card">
+        <div class="profile-avatar">🌟</div>
+        <div class="profile-info">
+          <h2 class="profile-name">Neon Nights: Pride Kickoff Party</h2>
+          <p class="profile-tagline">The biggest queer dance party in the tri-state, kicking off Pride Month with DJs, drag, and dazzle.</p>
+          <div class="profile-tags">
+            <span class="profile-tag">Nightlife</span>
+            <span class="profile-tag">DJ Sets</span>
+            <span class="profile-tag">Drag</span>
+            <span class="profile-tag">21+</span>
+          </div>
+          <div class="profile-social-links">
+            <a href="#" class="social-link">🌐 Website</a>
+            <a href="#" class="social-link">📘 Facebook</a>
+            <a href="#" class="social-link">📸 Instagram</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-details-grid">
+        <div class="detail-card">
+          <h3>Date &amp; Time</h3>
+          <div class="event-datetime">
+            <div class="event-date-box">
+              <div class="event-date-number">14</div>
+              <div class="event-date-month">JUN</div>
+            </div>
+            <div class="event-time-info">
+              <div class="event-time-display">9:00 PM — 2:00 AM</div>
+              <div class="event-day-name">Saturday, June 14, 2026</div>
+            </div>
+            <div class="event-price">$15</div>
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <h3>Location</h3>
+          <ul class="contact-list">
+            <li><span class="icon">📍</span> Below Zero Lounge</li>
+            <li><span class="icon">🏠</span> 1120 Walnut St, Cincinnati, OH 45202</li>
+            <li><span class="icon">♿</span> Wheelchair Accessible</li>
+          </ul>
+        </div>
+
+        <div class="detail-card detail-card-full">
+          <h3>About This Event</h3>
+          <p>Join us for the most anticipated queer event of the summer! Neon Nights returns for its 5th year, featuring three stages of music, a drag showcase by Cincinnati's finest queens and kings, and a rooftop lounge with skyline views. All proceeds benefit the Greater Cincinnati LGBTQ+ Community Fund. Dress code: neon, glitter, or your most fabulous self.</p>
+        </div>
+
+        <div class="detail-card">
+          <h3>Contact</h3>
+          <ul class="contact-list">
+            <li><span class="icon">📧</span> <a href="#">events@neonnightscincy.org</a></li>
+            <li><span class="icon">📞</span> (513) 555-0199</li>
+            <li><span class="icon">🎫</span> <a href="#">Buy Tickets</a></li>
+          </ul>
+        </div>
+
+        <div class="detail-card">
+          <h3>Performers</h3>
+          <ul class="contact-list">
+            <li><span class="icon">🎧</span> <a href="#">DJ Prism</a></li>
+            <li><span class="icon">💃</span> <a href="#">Anita Cocktail</a></li>
+            <li><span class="icon">🎤</span> <a href="#">The Velvet Underground Revue</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==============================
+         VENUE PROFILE
+         ============================== -->
+    <div id="profile-venue" class="profile-section">
+      <div class="profile-banner no-image">
+        <span class="profile-type-badge">Venue</span>
+      </div>
+      <div class="profile-header-card">
+        <div class="profile-avatar">🏳️‍🌈</div>
+        <div class="profile-info">
+          <h2 class="profile-name">Below Zero Lounge</h2>
+          <p class="profile-tagline">Cincinnati's premier LGBTQ+ nightlife destination since 2008. Three floors of music, dancing, and community.</p>
+          <div class="profile-tags">
+            <span class="profile-tag">Bar / Club</span>
+            <span class="profile-tag">Nightlife</span>
+            <span class="profile-tag">Drag Shows</span>
+            <span class="profile-tag">Live Music</span>
+          </div>
+          <div class="profile-social-links">
+            <a href="#" class="social-link">🌐 Website</a>
+            <a href="#" class="social-link">📘 Facebook</a>
+            <a href="#" class="social-link">📸 Instagram</a>
+            <a href="#" class="social-link">🐦 Twitter</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-details-grid">
+        <div class="detail-card">
+          <h3>Hours</h3>
+          <ul class="hours-list">
+            <li><span class="day">Monday</span> <span class="time">Closed</span></li>
+            <li><span class="day">Tuesday</span> <span class="time">Closed</span></li>
+            <li><span class="day">Wednesday</span> <span class="time">5:00 PM — 12:00 AM</span></li>
+            <li><span class="day">Thursday</span> <span class="time">5:00 PM — 1:00 AM</span></li>
+            <li><span class="day">Friday</span> <span class="time">5:00 PM — 2:30 AM</span></li>
+            <li><span class="day">Saturday</span> <span class="time">5:00 PM — 2:30 AM</span></li>
+            <li><span class="day">Sunday</span> <span class="time">12:00 PM — 10:00 PM</span></li>
+          </ul>
+        </div>
+
+        <div class="detail-card">
+          <h3>Location &amp; Access</h3>
+          <ul class="contact-list">
+            <li><span class="icon">🏠</span> 1120 Walnut St, Cincinnati, OH 45202</li>
+            <li><span class="icon">♿</span> Wheelchair Accessible (Main Floor)</li>
+            <li><span class="icon">🅿️</span> Street parking, garage 1 block east</li>
+            <li><span class="icon">🚌</span> Metro Stop: Walnut &amp; 12th</li>
+          </ul>
+          <div class="map-placeholder" style="margin-top: 16px;">
+            🗺️ Map will go here
+          </div>
+        </div>
+
+        <div class="detail-card detail-card-full">
+          <h3>About This Venue</h3>
+          <p>Below Zero Lounge has been a cornerstone of Cincinnati's LGBTQ+ community for over 15 years. With three distinct floors — the main dance floor, an intimate piano bar, and a rooftop patio — there's something for everyone. We host weekly drag shows, karaoke nights, and special events throughout the year. All are welcome. Capacity: 350.</p>
+        </div>
+
+        <div class="detail-card">
+          <h3>Contact</h3>
+          <ul class="contact-list">
+            <li><span class="icon">📧</span> <a href="#">info@belowzerolounge.com</a></li>
+            <li><span class="icon">📞</span> (513) 555-0142</li>
+            <li><span class="icon">🎫</span> <a href="#">Book Private Event</a></li>
+          </ul>
+        </div>
+
+        <div class="detail-card">
+          <h3>Features</h3>
+          <div class="performance-types">
+            <span class="performance-type">🍹 Full Bar</span>
+            <span class="performance-type">🍕 Food Menu</span>
+            <span class="performance-type">🎵 Sound System</span>
+            <span class="performance-type">💡 Stage Lighting</span>
+            <span class="performance-type">🌿 Rooftop Patio</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">Upcoming Events at This Venue</div>
+      <div class="past-events-grid">
+        <div class="past-event-card">
+          <div class="past-event-date">SAT JUN 14, 2026 • 9:00 PM</div>
+          <div class="past-event-title">Neon Nights: Pride Kickoff Party</div>
+          <div class="past-event-venue">Below Zero Lounge</div>
+          <div class="past-event-icons">🌟 🎧 💃</div>
+        </div>
+        <div class="past-event-card">
+          <div class="past-event-date">FRI JUN 20, 2026 • 8:00 PM</div>
+          <div class="past-event-title">Karaoke Queens Night</div>
+          <div class="past-event-venue">Below Zero Lounge</div>
+          <div class="past-event-icons">🎤 🌟</div>
+        </div>
+        <div class="past-event-card">
+          <div class="past-event-date">SAT JUN 28, 2026 • 10:00 PM</div>
+          <div class="past-event-title">Leather &amp; Lace: Summer Ball</div>
+          <div class="past-event-venue">Below Zero Lounge</div>
+          <div class="past-event-icons">🔗 👕 🌟</div>
+        </div>
+      </div>
+
+      <div class="section-title" style="margin-top: 30px;">Past Events</div>
+      <div class="past-events-grid">
+        <div class="past-event-card">
+          <div class="past-event-date">SAT MAY 10, 2026 • 9:00 PM</div>
+          <div class="past-event-title">Disco Inferno Throwback</div>
+          <div class="past-event-venue">Below Zero Lounge</div>
+          <div class="past-event-icons">🎧 💃</div>
+        </div>
+        <div class="past-event-card">
+          <div class="past-event-date">FRI APR 18, 2026 • 7:00 PM</div>
+          <div class="past-event-title">Community Fundraiser Gala</div>
+          <div class="past-event-venue">Below Zero Lounge</div>
+          <div class="past-event-icons">💰 🤝</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==============================
+         ARTIST PROFILE
+         ============================== -->
+    <div id="profile-artist" class="profile-section">
+      <div class="profile-banner no-image">
+        <span class="profile-type-badge">Artist</span>
+      </div>
+      <div class="profile-header-card">
+        <div class="profile-avatar">💃</div>
+        <div class="profile-info">
+          <h2 class="profile-name">Anita Cocktail</h2>
+          <p class="profile-tagline">Cincinnati's reigning queen of comedy drag. Serving looks, laughs, and lip syncs since 2015.</p>
+          <div class="profile-tags">
+            <span class="profile-tag">Drag Queen</span>
+            <span class="profile-tag">Comedy</span>
+            <span class="profile-tag">Lip Sync</span>
+            <span class="profile-tag">Host / MC</span>
+          </div>
+          <div class="profile-social-links">
+            <a href="#" class="social-link">📸 Instagram</a>
+            <a href="#" class="social-link">🎵 TikTok</a>
+            <a href="#" class="social-link">📘 Facebook</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-details-grid">
+        <div class="detail-card">
+          <h3>Performance Types</h3>
+          <div class="performance-types">
+            <span class="performance-type">💃 Drag Show</span>
+            <span class="performance-type">🎤 Hosting / MC</span>
+            <span class="performance-type">😂 Comedy Set</span>
+            <span class="performance-type">👗 Fashion Show</span>
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <h3>Booking</h3>
+          <ul class="contact-list">
+            <li><span class="icon">📧</span> <a href="#">booking@anitacocktail.com</a></li>
+            <li><span class="icon">📞</span> (513) 555-0177</li>
+            <li><span class="icon">💰</span> Rates available upon request</li>
+            <li><span class="icon">📍</span> Based in Cincinnati, OH — will travel</li>
+          </ul>
+        </div>
+
+        <div class="detail-card detail-card-full">
+          <h3>About</h3>
+          <p>Anita Cocktail has been a staple of the Cincinnati drag scene for over a decade. Known for her razor-sharp wit, jaw-dropping reveals, and legendary lip syncs, she's hosted everything from intimate bar shows to Pride main stages. When she's not in a wig, she's mentoring the next generation of drag performers through the Cincinnati Drag Workshop program.</p>
+        </div>
+      </div>
+
+      <div class="section-title">Upcoming Shows</div>
+      <div class="past-events-grid">
+        <div class="past-event-card">
+          <div class="past-event-date">SAT JUN 14, 2026 • 9:00 PM</div>
+          <div class="past-event-title">Neon Nights: Pride Kickoff Party</div>
+          <div class="past-event-venue">Below Zero Lounge</div>
+          <div class="past-event-icons">💃 🌟</div>
+        </div>
+        <div class="past-event-card">
+          <div class="past-event-date">WED JUN 18, 2026 • 8:00 PM</div>
+          <div class="past-event-title">Anita's Comedy Hour</div>
+          <div class="past-event-venue">The Dock</div>
+          <div class="past-event-icons">😂 🎤</div>
+        </div>
+      </div>
+
+      <div class="section-title" style="margin-top: 30px;">Past Performances</div>
+      <div class="past-events-grid">
+        <div class="past-event-card">
+          <div class="past-event-date">SAT MAY 24, 2026 • 10:00 PM</div>
+          <div class="past-event-title">Memorial Weekend Extravaganza</div>
+          <div class="past-event-venue">Below Zero Lounge</div>
+          <div class="past-event-icons">💃 🎧 🌟</div>
+        </div>
+        <div class="past-event-card">
+          <div class="past-event-date">FRI MAY 2, 2026 • 9:00 PM</div>
+          <div class="past-event-title">Drag Bingo Fundraiser</div>
+          <div class="past-event-venue">Woodward Theater</div>
+          <div class="past-event-icons">💃 💰 💬</div>
+        </div>
+        <div class="past-event-card">
+          <div class="past-event-date">SAT APR 12, 2026 • 8:00 PM</div>
+          <div class="past-event-title">Spring Fling Drag Brunch</div>
+          <div class="past-event-venue">Taste of Belgium OTR</div>
+          <div class="past-event-icons">💃 🥞</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========================================
+       FOOTER
+       ======================================== -->
+  <footer>
+    QU Calendar &copy; 2026 — A non-profit LGBTQ+ community project
+  </footer>
+
+  <!-- ========================================
+       MOCKUP SWITCHER SCRIPT
+       ======================================== -->
+  <script>
+    function switchProfile(type) {
+      document.querySelectorAll('.profile-section').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.mockup-switcher button').forEach(el => el.classList.remove('active'));
+      document.getElementById('profile-' + type).classList.add('active');
+      event.target.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+
+</body>
+</html>

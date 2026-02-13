@@ -97,6 +97,9 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
   position: relative;
   overflow: hidden;
+  text-decoration: none;
+  color: #ffffff;
+  cursor: pointer;
 }
 
 .event-card-inline::before {
@@ -175,6 +178,122 @@
   margin-top: auto;
 }
 
+.no-events {
+  text-align: center;
+  padding: 60px 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.no-events p {
+  font-size: 1.2rem;
+  opacity: 0.7;
+}
+
+.no-events .no-events-hint {
+  font-size: 0.95rem;
+  opacity: 0.5;
+  margin-top: 8px;
+}
+
+/* ========================================
+   LIST VIEW
+   ======================================== */
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.event-list-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  border-left: 3px solid;
+  border-image: linear-gradient(180deg, #E40303, #FF8C00, #FFED00, #008026, #24408E, #732982) 1;
+  text-decoration: none;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.event-list-item:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateX(4px);
+}
+
+.list-date-col {
+  text-align: center;
+  min-width: 50px;
+}
+
+.list-date-number {
+  font-family: 'Michroma', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.list-date-month {
+  font-size: 0.7rem;
+  font-weight: 700;
+  opacity: 0.8;
+  margin-top: 2px;
+  letter-spacing: 0.5px;
+}
+
+.list-time-col {
+  min-width: 90px;
+}
+
+.list-time {
+  font-family: 'Michroma', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #FF8C00;
+}
+
+.list-day {
+  font-size: 0.8rem;
+  opacity: 0.6;
+}
+
+.list-info-col {
+  flex: 1;
+}
+
+.list-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.list-venue {
+  font-size: 0.9rem;
+  color: #00D4FF;
+  opacity: 0.85;
+  margin-top: 2px;
+}
+
+.list-icons-col {
+  display: flex;
+  gap: 6px;
+  font-size: 1.2rem;
+}
+
+.list-price-col {
+  font-family: 'Michroma', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  min-width: 60px;
+  text-align: right;
+  color: #FFD700;
+}
+
 @media (max-width: 768px) {
   .day-header {
     flex-wrap: wrap;
@@ -191,5 +310,15 @@
   
   .day-events {
     grid-template-columns: 1fr;
+  }
+
+  .event-list-item {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .list-icons-col,
+  .list-price-col {
+    display: none;
   }
 }

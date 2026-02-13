@@ -1,0 +1,254 @@
+<div class="container" *ngIf="profile() as p">
+
+  <!-- BANNER -->
+  <div class="profile-banner">
+    <img *ngIf="p.bannerImage" [src]="p.bannerImage" [alt]="p.name + ' banner'">
+    <span class="profile-type-badge">{{ getProfileTypeBadge() }}</span>
+  </div>
+
+  <!-- HEADER CARD -->
+  <div class="profile-header-card">
+    <div class="profile-avatar">
+      <img *ngIf="p.avatarImage" [src]="p.avatarImage" [alt]="p.name">
+      <span *ngIf="!p.avatarImage">{{ p.avatarEmoji }}</span>
+    </div>
+    <div class="profile-info">
+      <h2 class="profile-name">{{ p.name }}</h2>
+      <p class="profile-tagline">{{ p.tagline }}</p>
+      <div class="profile-tags">
+        <span class="profile-tag" *ngFor="let tag of p.tags">{{ tag }}</span>
+      </div>
+      <div class="profile-social-links">
+        <a *ngFor="let link of p.socialLinks"
+           [href]="link.url"
+           class="social-link"
+           target="_blank"
+           rel="noopener noreferrer">
+          {{ link.icon }} {{ link.platform }}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================
+       EVENT-SPECIFIC DETAILS
+       ============================== -->
+  <div class="profile-details-grid" *ngIf="eventProfile() as event">
+
+    <div class="detail-card">
+      <h3>Date & Time</h3>
+      <div class="event-datetime">
+        <div class="event-date-box">
+          <div class="event-date-number">{{ event.dayNumber }}</div>
+          <div class="event-date-month">{{ event.month }}</div>
+        </div>
+        <div class="event-time-info">
+          <div class="event-time-display">{{ event.startTime }} — {{ event.endTime }}</div>
+          <div class="event-day-name">{{ event.dayOfWeek }}, {{ event.fullDate }}</div>
+        </div>
+        <div class="event-price">{{ event.price }}</div>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <h3>Location</h3>
+      <ul class="contact-list">
+        <li>
+          <span class="icon">📍</span>
+          <a [routerLink]="['/profile/venues', event.venueId]">{{ event.venueName }}</a>
+        </li>
+        <li><span class="icon">🏠</span> {{ event.venueAddress }}</li>
+        <li *ngIf="event.isAccessible"><span class="icon">♿</span> Wheelchair Accessible</li>
+      </ul>
+    </div>
+
+    <div class="detail-card detail-card-full">
+      <h3>About This Event</h3>
+      <p>{{ event.description }}</p>
+    </div>
+
+    <div class="detail-card">
+      <h3>Contact</h3>
+      <ul class="contact-list">
+        <li *ngIf="event.contactEmail">
+          <span class="icon">📧</span>
+          <a [href]="'mailto:' + event.contactEmail">{{ event.contactEmail }}</a>
+        </li>
+        <li *ngIf="event.contactPhone">
+          <span class="icon">📞</span> {{ event.contactPhone }}
+        </li>
+        <li *ngIf="event.ticketUrl">
+          <span class="icon">🎫</span>
+          <a [href]="event.ticketUrl" target="_blank" rel="noopener noreferrer">Buy Tickets</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="detail-card" *ngIf="event.artistNames.length > 0">
+      <h3>Performers</h3>
+      <ul class="contact-list">
+        <li *ngFor="let artistName of event.artistNames; let i = index">
+          <span class="icon">🎤</span>
+          <a [routerLink]="['/profile/artists', event.artistIds[i]]">{{ artistName }}</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ==============================
+       VENUE-SPECIFIC DETAILS
+       ============================== -->
+  <div class="profile-details-grid" *ngIf="venueProfile() as venue">
+
+    <div class="detail-card">
+      <h3>Hours</h3>
+      <ul class="hours-list">
+        <li *ngFor="let h of venue.hours">
+          <span class="day">{{ h.day }}</span>
+          <span class="time">{{ h.time }}</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="detail-card">
+      <h3>Location & Access</h3>
+      <ul class="contact-list">
+        <li><span class="icon">🏠</span> {{ venue.address }}, {{ venue.city }}, {{ venue.state }} {{ venue.zip }}</li>
+        <li *ngIf="venue.isAccessible"><span class="icon">♿</span> Wheelchair Accessible</li>
+        <li><span class="icon">🅿️</span> {{ venue.parking }}</li>
+        <li><span class="icon">🚌</span> {{ venue.transit }}</li>
+      </ul>
+      <div class="map-placeholder">
+        🗺️ Map will go here
+      </div>
+    </div>
+
+    <div class="detail-card detail-card-full">
+      <h3>About This Venue</h3>
+      <p>{{ venue.description }} Capacity: {{ venue.capacity }}.</p>
+    </div>
+
+    <div class="detail-card">
+      <h3>Contact</h3>
+      <ul class="contact-list">
+        <li *ngIf="venue.contactEmail">
+          <span class="icon">📧</span>
+          <a [href]="'mailto:' + venue.contactEmail">{{ venue.contactEmail }}</a>
+        </li>
+        <li *ngIf="venue.contactPhone">
+          <span class="icon">📞</span> {{ venue.contactPhone }}
+        </li>
+        <li *ngIf="venue.bookingUrl">
+          <span class="icon">🎫</span>
+          <a [href]="venue.bookingUrl" target="_blank" rel="noopener noreferrer">Book Private Event</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="detail-card">
+      <h3>Features</h3>
+      <div class="features-grid">
+        <span class="feature-item" *ngFor="let f of venue.features">
+          {{ f.icon }} {{ f.label }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================
+       ARTIST-SPECIFIC DETAILS
+       ============================== -->
+  <div class="profile-details-grid" *ngIf="artistProfile() as artist">
+
+    <div class="detail-card">
+      <h3>Performance Types</h3>
+      <div class="features-grid">
+        <span class="feature-item" *ngFor="let pt of artist.performanceTypes">
+          {{ pt.icon }} {{ pt.label }}
+        </span>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <h3>Booking</h3>
+      <ul class="contact-list">
+        <li *ngIf="artist.bookingEmail">
+          <span class="icon">📧</span>
+          <a [href]="'mailto:' + artist.bookingEmail">{{ artist.bookingEmail }}</a>
+        </li>
+        <li *ngIf="artist.bookingPhone">
+          <span class="icon">📞</span> {{ artist.bookingPhone }}
+        </li>
+        <li><span class="icon">💰</span> {{ artist.ratesInfo }}</li>
+        <li>
+          <span class="icon">📍</span>
+          Based in {{ artist.basedIn }}
+          <span *ngIf="artist.willTravel"> — will travel</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="detail-card detail-card-full">
+      <h3>About</h3>
+      <p>{{ artist.description }}</p>
+    </div>
+  </div>
+
+  <!-- ==============================
+       UPCOMING EVENTS (Venue & Artist)
+       ============================== -->
+  <div *ngIf="upcomingEvents().length > 0">
+    <div class="section-title">
+      Upcoming {{ profileType() === 'venues' ? 'Events at This Venue' : 'Shows' }}
+    </div>
+    <div class="related-events-grid">
+      <a *ngFor="let evt of upcomingEvents()"
+         [routerLink]="['/profile/events', evt.id]"
+         class="related-event-card">
+        <div class="related-event-date">
+          {{ evt.dayOfWeek | uppercase | slice:0:3 }} {{ evt.month }} {{ evt.dayNumber }}, {{ evt.fullDate.split(', ')[1] }} • {{ evt.startTime }}
+        </div>
+        <div class="related-event-title">{{ evt.name }}</div>
+        <div class="related-event-venue">{{ evt.venueName }}</div>
+        <div class="related-event-icons">
+          <span *ngFor="let tag of evt.tags | slice:0:3">
+            {{ tag }}
+          </span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ==============================
+       PAST EVENTS (Venue & Artist)
+       ============================== -->
+  <div *ngIf="pastEvents().length > 0" style="margin-top: 30px;">
+    <div class="section-title">Past Events</div>
+    <div class="related-events-grid">
+      <a *ngFor="let evt of pastEvents()"
+         [routerLink]="['/profile/events', evt.id]"
+         class="related-event-card past">
+        <div class="related-event-date">
+          {{ evt.dayOfWeek | uppercase | slice:0:3 }} {{ evt.month }} {{ evt.dayNumber }}, {{ evt.fullDate.split(', ')[1] }} • {{ evt.startTime }}
+        </div>
+        <div class="related-event-title">{{ evt.name }}</div>
+        <div class="related-event-venue">{{ evt.venueName }}</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- BACK LINK -->
+  <div class="back-link">
+    <a routerLink="/">← Back to Calendar</a>
+  </div>
+
+</div>
+
+<!-- NOT FOUND -->
+<div class="container" *ngIf="!profile()">
+  <div class="not-found">
+    <h2>Profile Not Found</h2>
+    <p>The {{ getProfileTypeBadge().toLowerCase() || 'profile' }} you're looking for doesn't exist.</p>
+    <a routerLink="/" class="back-btn">← Back to Calendar</a>
+  </div>
+</div>

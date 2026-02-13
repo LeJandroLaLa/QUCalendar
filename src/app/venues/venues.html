@@ -1,0 +1,73 @@
+<div class="container">
+  <div class="hero">
+    <h2>Venues</h2>
+    <p>Discover <span class="hero-accent">LGBTQ+</span> friendly spaces across Cincinnati, Northern Kentucky, and beyond.</p>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filter-section">
+    <div class="filter-row">
+      <div class="input-group">
+        <span class="input-icon">📍</span>
+        <input type="text"
+               placeholder="Search by city, state, zip, or venue name..."
+               class="filter-input"
+               [ngModel]="locationQuery()"
+               (ngModelChange)="locationQuery.set($event)">
+      </div>
+      <button class="filter-btn secondary" (click)="clearFilters()" *ngIf="hasActiveFilters()">Clear</button>
+    </div>
+
+    <div class="venue-type-grid">
+      <div class="venue-type-item"
+           *ngFor="let vt of venueTypes"
+           (click)="toggleType(vt.type)"
+           [class.selected]="isTypeSelected(vt.type)">
+        <div class="type-icon">{{ vt.icon }}</div>
+        <div class="type-label">{{ vt.type }}</div>
+      </div>
+    </div>
+
+    <div class="active-filters-bar" *ngIf="selectedTypes().length > 0">
+      <span class="active-count">{{ selectedTypes().length }} type{{ selectedTypes().length > 1 ? 's' : '' }} selected</span>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results-header">
+    <span class="results-count">{{ filteredVenues().length }} venue{{ filteredVenues().length !== 1 ? 's' : '' }}</span>
+  </div>
+
+  <div class="venues-grid">
+    <a class="venue-card" *ngFor="let venue of filteredVenues()"
+       [routerLink]="['/profile/venues', venue.id]">
+      <div class="venue-banner">
+        <span class="venue-avatar">{{ venue.avatarEmoji }}</span>
+        <span class="venue-type-badge">{{ getTypeIcon(venue.venueType) }} {{ venue.venueType }}</span>
+      </div>
+      <div class="venue-info">
+        <h3>{{ venue.name }}</h3>
+        <p class="venue-tagline">{{ venue.tagline }}</p>
+        <div class="venue-meta">
+          <span class="venue-location">📍 {{ venue.city }}, {{ venue.state }}</span>
+          <span class="venue-events" *ngIf="getUpcomingEventCount(venue.id) > 0">
+            🎫 {{ getUpcomingEventCount(venue.id) }} upcoming
+          </span>
+        </div>
+        <div class="venue-tags">
+          <span class="tag" *ngFor="let tag of venue.tags">{{ tag }}</span>
+        </div>
+        <div class="venue-features">
+          <span class="feature" *ngFor="let f of venue.features">{{ f.icon }}</span>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <!-- NO RESULTS -->
+  <div class="no-results" *ngIf="filteredVenues().length === 0">
+    <div class="no-results-icon">🔍</div>
+    <h3>No venues found</h3>
+    <p>Try adjusting your location search or venue type filters.</p>
+  </div>
+</div>

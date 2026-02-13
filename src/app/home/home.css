@@ -21,6 +21,15 @@
   font-weight: 700;
 }
 
+.hero-accent {
+  font-family: 'Michroma', sans-serif;
+  letter-spacing: 2px;
+  background: linear-gradient(90deg, #E40303, #FF8C00, #FFED00, #008026, #24408E, #732982);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 .hero p {
   font-size: 1.15rem;
   opacity: 0.9;
@@ -181,6 +190,23 @@
   background: rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.3);
   transform: translateY(-2px);
+}
+
+.event-type-item.selected {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.4), rgba(147, 51, 234, 0.4));
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 12px rgba(147, 51, 234, 0.3);
+}
+
+.filter-btn.secondary.active-filter {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.5), rgba(147, 51, 234, 0.5));
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.active-count {
+  font-size: 0.85rem;
+  color: #FFD700;
+  font-weight: 700;
 }
 
 .event-icon {

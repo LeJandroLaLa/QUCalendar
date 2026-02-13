@@ -1,181 +1,65 @@
-<div class="events-by-day">
-  <div class="day-section">
+<!-- CALENDAR VIEW (grouped by day) -->
+<div class="events-by-day" *ngIf="viewMode === 'calendar'">
+  <div class="day-section" *ngFor="let day of dayGroups()">
     <div class="day-header">
       <div class="day-date-box">
-        <div class="day-number">28</div>
-        <div class="day-month">JAN</div>
+        <div class="day-number">{{ day.dayNumber }}</div>
+        <div class="day-month">{{ day.month }}</div>
       </div>
       <div class="day-info">
-        <div class="day-name">Tuesday</div>
-        <div class="day-full-date">January 28, 2026</div>
+        <div class="day-name">{{ day.dayOfWeek }}</div>
+        <div class="day-full-date">{{ day.fullDate }}</div>
       </div>
-      <div class="event-count">3 events</div>
+      <div class="event-count">{{ day.events.length }} {{ day.events.length === 1 ? 'event' : 'events' }}</div>
     </div>
-    
-    <div class="day-events">
-      <div class="event-card-inline">
-        <div class="event-time-block">
-          <div class="event-time-main">7:00 PM</div>
-          <div class="event-stardate">12607.79</div>
-        </div>
-        <div class="event-details">
-          <div class="event-title">Trivia Night</div>
-          <div class="event-venue">📍 Tillie's Lounge</div>
-          <div class="event-icons">
-            <span>🧠</span>
-            <span>🌙</span>
-          </div>
-        </div>
-      </div>
-      
-      <div class="event-card-inline">
-        <div class="event-time-block">
-          <div class="event-time-main">8:00 PM</div>
-          <div class="event-stardate">12607.83</div>
-        </div>
-        <div class="event-details">
-          <div class="event-title">Open Mic Night</div>
-          <div class="event-venue">📍 MOTR Pub</div>
-          <div class="event-icons">
-            <span>🎤</span>
-          </div>
-        </div>
-      </div>
-      
-      <div class="event-card-inline">
-        <div class="event-time-block">
-          <div class="event-time-main">9:00 PM</div>
-          <div class="event-stardate">12607.88</div>
-        </div>
-        <div class="event-details">
-          <div class="event-title">Karaoke Night</div>
-          <div class="event-venue">📍 Northside Tavern</div>
-          <div class="event-icons">
-            <span>🧑‍🎤</span>
-            <span>🌙</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <div class="day-section">
-    <div class="day-header">
-      <div class="day-date-box">
-        <div class="day-number">29</div>
-        <div class="day-month">JAN</div>
-      </div>
-      <div class="day-info">
-        <div class="day-name">Wednesday</div>
-        <div class="day-full-date">January 29, 2026</div>
-      </div>
-      <div class="event-count">2 events</div>
-    </div>
-    
     <div class="day-events">
-      <div class="event-card-inline">
+      <a *ngFor="let event of day.events"
+         [routerLink]="['/profile/events', event.id]"
+         class="event-card-inline">
         <div class="event-time-block">
-          <div class="event-time-main">6:30 PM</div>
-          <div class="event-stardate">12608.77</div>
+          <div class="event-time-main">{{ event.startTime }}</div>
+          <div class="event-stardate">{{ calculateStardate(event.date, event.startTime) }}</div>
         </div>
         <div class="event-details">
-          <div class="event-title">Yoga & Meditation</div>
-          <div class="event-venue">📍 Cincinnati Yoga Collective</div>
+          <div class="event-title">{{ event.name }}</div>
+          <div class="event-venue">📍 {{ event.venueName }}</div>
           <div class="event-icons">
-            <span>🪷</span>
-            <span>✨</span>
+            <span *ngFor="let cat of event.category | slice:0:3">{{ getCategoryIcon(cat) }}</span>
           </div>
         </div>
-      </div>
-      
-      <div class="event-card-inline">
-        <div class="event-time-block">
-          <div class="event-time-main">10:00 PM</div>
-          <div class="event-stardate">12608.92</div>
-        </div>
-        <div class="event-details">
-          <div class="event-title">DJ Night - House Music</div>
-          <div class="event-venue">📍 Alice</div>
-          <div class="event-icons">
-            <span>🎧</span>
-            <span>🌙</span>
-          </div>
-        </div>
-      </div>
+      </a>
     </div>
   </div>
+</div>
 
-  <div class="day-section">
-    <div class="day-header">
-      <div class="day-date-box">
-        <div class="day-number">30</div>
-        <div class="day-month">JAN</div>
-      </div>
-      <div class="day-info">
-        <div class="day-name">Thursday</div>
-        <div class="day-full-date">January 30, 2026</div>
-      </div>
-      <div class="event-count">4 events</div>
+<!-- LIST VIEW (flat list) -->
+<div class="events-list" *ngIf="viewMode === 'list'">
+  <a *ngFor="let event of flatEvents()"
+     [routerLink]="['/profile/events', event.id]"
+     class="event-list-item">
+    <div class="list-date-col">
+      <div class="list-date-number">{{ event.dayNumber }}</div>
+      <div class="list-date-month">{{ event.month }}</div>
     </div>
-    
-    <div class="day-events">
-      <div class="event-card-inline">
-        <div class="event-time-block">
-          <div class="event-time-main">6:00 PM</div>
-          <div class="event-stardate">12609.75</div>
-        </div>
-        <div class="event-details">
-          <div class="event-title">Queer Art Gallery Opening</div>
-          <div class="event-venue">📍 Pendleton Art Center</div>
-          <div class="event-icons">
-            <span>📸</span>
-          </div>
-        </div>
-      </div>
-      
-      <div class="event-card-inline">
-        <div class="event-time-block">
-          <div class="event-time-main">7:00 PM</div>
-          <div class="event-stardate">12609.79</div>
-        </div>
-        <div class="event-details">
-          <div class="event-title">Networking Happy Hour</div>
-          <div class="event-venue">📍 Mockbee</div>
-          <div class="event-icons">
-            <span>🤝</span>
-          </div>
-        </div>
-      </div>
-      
-      <div class="event-card-inline">
-        <div class="event-time-block">
-          <div class="event-time-main">8:00 PM</div>
-          <div class="event-stardate">12609.83</div>
-        </div>
-        <div class="event-details">
-          <div class="event-title">Drag Bingo</div>
-          <div class="event-venue">📍 Tillie's Lounge</div>
-          <div class="event-icons">
-            <span>🪄</span>
-            <span>💰</span>
-          </div>
-        </div>
-      </div>
-      
-      <div class="event-card-inline">
-        <div class="event-time-block">
-          <div class="event-time-main">10:00 PM</div>
-          <div class="event-stardate">12609.92</div>
-        </div>
-        <div class="event-details">
-          <div class="event-title">Leather Night</div>
-          <div class="event-venue">📍 Crazy Fox Saloon</div>
-          <div class="event-icons">
-            <span>⛓️</span>
-            <span>🌙</span>
-          </div>
-        </div>
-      </div>
+    <div class="list-time-col">
+      <div class="list-time">{{ event.startTime }}</div>
+      <div class="list-day">{{ event.dayOfWeek }}</div>
     </div>
-  </div>
+    <div class="list-info-col">
+      <div class="list-title">{{ event.name }}</div>
+      <div class="list-venue">📍 {{ event.venueName }}</div>
+    </div>
+    <div class="list-icons-col">
+      <span *ngFor="let cat of event.category | slice:0:3">{{ getCategoryIcon(cat) }}</span>
+    </div>
+    <div class="list-price-col">{{ event.price }}</div>
+  </a>
+</div>
+
+<!-- NO RESULTS -->
+<div *ngIf="(viewMode === 'calendar' && dayGroups().length === 0) || (viewMode === 'list' && flatEvents().length === 0)"
+     class="no-events">
+  <p>No events match your filters.</p>
+  <p class="no-events-hint">Try adjusting your location, date, or category filters.</p>
 </div>
