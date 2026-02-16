@@ -111,7 +111,7 @@ export class EventForm implements OnInit {
     }
   }
 
-  onImageSelected(event: Event): void {
+  onImageSelected(event: any): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       const file = input.files[0];
@@ -145,7 +145,7 @@ export class EventForm implements OnInit {
     this.imagePreview = null;
   }
 
-  onPerformerChange(event: Event): void {
+  onPerformerChange(event: any): void {
     const select = event.target as HTMLSelectElement;
     const selectedOptions = Array.from(select.selectedOptions).map(option => option.value);
     this.eventForm.patchValue({ performerIds: selectedOptions });

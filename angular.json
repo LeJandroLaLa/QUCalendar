@@ -2,11 +2,12 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "analytics": false
   },
   "newProjectRoot": "projects",
   "projects": {
-    "the-queer-calendar": {
+    "QUCalendar": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -56,10 +57,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "the-queer-calendar:build:production"
+              "buildTarget": "QUCalendar:build:production"
             },
             "development": {
-              "buildTarget": "the-queer-calendar:build:development"
+              "buildTarget": "QUCalendar:build:development"
             }
           },
           "defaultConfiguration": "development"
