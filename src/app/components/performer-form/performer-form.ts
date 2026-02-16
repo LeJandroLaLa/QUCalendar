@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Firestore, collection, addDoc } from '@angular/fire/firestore';
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '../../firebase.config';
 import { StorageService } from '../../services/storage.service';
 import { Performer } from '../../models/performer.model';
 
@@ -18,6 +19,7 @@ export class PerformerForm {
   isSubmitting = false;
   submitSuccess = false;
   errorMessage = '';
+  private db = db;
 
   performanceTypeOptions = [
     'Drag Performance',
@@ -34,7 +36,6 @@ export class PerformerForm {
 
   constructor(
     private fb: FormBuilder,
-    private firestore: Firestore,
     private storageService: StorageService
   ) {
     this.performerForm = this.fb.group({
@@ -144,7 +145,7 @@ export class PerformerForm {
       };
 
       // Save to Firestore
-      const performersCollection = collection(this.firestore, 'performers');
+      const performersCollection = collection(this.db, 'performers');
       await addDoc(performersCollection, performerData);
 
       this.submitSuccess = true;

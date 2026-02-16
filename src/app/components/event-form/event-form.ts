@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Firestore, collection, addDoc, getDocs } from '@angular/fire/firestore';
+import { collection, addDoc, getDocs } from 'firebase/firestore';
+import { db } from '../../firebase.config';
 import { StorageService } from '../../services/storage.service';
 import { Event } from '../../models/event.model';
 import { Venue } from '../../models/venue.model';
@@ -24,6 +25,7 @@ export class EventForm implements OnInit {
   performers: Performer[] = [];
   isLoadingVenues = false;
   isLoadingPerformers = false;
+  private db = db;
 
   eventTypeOptions = [
     'Drag Show',
@@ -49,7 +51,6 @@ export class EventForm implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private firestore: Firestore,
     private storageService: StorageService
   ) {
     this.eventForm = this.fb.group({
@@ -79,7 +80,7 @@ export class EventForm implements OnInit {
   async loadVenues(): Promise<void> {
     this.isLoadingVenues = true;
     try {
-      const venuesCollection = collection(this.firestore, 'venues');
+      const venuesCollection = collection(this.db, 'venues');
       const venuesSnapshot = await getDocs(venuesCollection);
       this.venues = venuesSnapshot.docs.map(doc => ({
         id: doc.id,
@@ -96,7 +97,7 @@ export class EventForm implements OnInit {
   async loadPerformers(): Promise<void> {
     this.isLoadingPerformers = true;
     try {
-      const performersCollection = collection(this.firestore, 'performers');
+      const performersCollection = collection(this.db, 'performers');
       const performersSnapshot = await getDocs(performersCollection);
       this.performers = performersSnapshot.docs.map(doc => ({
         id: doc.id,
@@ -211,7 +212,7 @@ export class EventForm implements OnInit {
       };
 
       // Save to Firestore
-      const eventsCollection = collection(this.firestore, 'events');
+      const eventsCollection = collection(this.db, 'events');
       await addDoc(eventsCollection, eventData);
 
       this.submitSuccess = true;

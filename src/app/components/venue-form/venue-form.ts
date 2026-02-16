@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Firestore, collection, addDoc } from '@angular/fire/firestore';
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '../../firebase.config';
 import { StorageService } from '../../services/storage.service';
 import { Venue } from '../../models/venue.model';
 
@@ -18,6 +19,7 @@ export class VenueForm {
   isSubmitting = false;
   submitSuccess = false;
   errorMessage = '';
+  private db = db;
 
   amenitiesOptions = [
     'Bar',
@@ -32,7 +34,6 @@ export class VenueForm {
 
   constructor(
     private fb: FormBuilder,
-    private firestore: Firestore,
     private storageService: StorageService
   ) {
     this.venueForm = this.fb.group({
@@ -148,7 +149,7 @@ export class VenueForm {
       };
 
       // Save to Firestore
-      const venuesCollection = collection(this.firestore, 'venues');
+      const venuesCollection = collection(this.db, 'venues');
       await addDoc(venuesCollection, venueData);
 
       this.submitSuccess = true;

@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Storage, ref, uploadBytes, getDownloadURL, deleteObject } from '@angular/fire/storage';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { storage } from '../firebase.config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StorageService {
-  constructor(private storage: Storage) {}
+  private storage = storage;
+
+  constructor() {}
 
   /**
    * Upload an image to Firebase Storage
