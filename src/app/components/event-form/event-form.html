@@ -1,0 +1,276 @@
+<div class="form-container">
+  <h1>Submit an Event</h1>
+  <p class="subtitle">Share your QUeer event with the community!</p>
+
+  <form [formGroup]="eventForm" (ngSubmit)="onSubmit()">
+
+    <!-- Success Message -->
+    <div *ngIf="submitSuccess" class="alert alert-success">
+      ✓ Your event has been submitted successfully and is pending approval!
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="alert alert-error">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Event Image Upload -->
+    <div class="form-section">
+      <h2>Event Promo Image</h2>
+      <div class="image-upload">
+        <div *ngIf="!imagePreview" class="upload-placeholder">
+          <input
+            type="file"
+            id="eventImage"
+            accept="image/*"
+            (change)="onImageSelected($event)"
+            class="file-input"
+          />
+          <label for="eventImage" class="upload-label">
+            <span class="upload-icon">🎉</span>
+            <span>Click to upload event promo image</span>
+            <span class="upload-hint">Max size: 5MB</span>
+          </label>
+        </div>
+        <div *ngIf="imagePreview" class="image-preview">
+          <img [src]="imagePreview" alt="Event preview" />
+          <button type="button" (click)="removeImage()" class="btn-remove">Remove</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Event Information -->
+    <div class="form-section">
+      <h2>Event Information</h2>
+
+      <div class="form-group">
+        <label for="title">Event Title *</label>
+        <input
+          type="text"
+          id="title"
+          formControlName="title"
+          placeholder="Enter event title"
+          [class.invalid]="eventForm.get('title')?.invalid && eventForm.get('title')?.touched"
+        />
+        <div *ngIf="eventForm.get('title')?.invalid && eventForm.get('title')?.touched" class="error-text">
+          Event title is required (minimum 3 characters)
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Event Description *</label>
+        <textarea
+          id="description"
+          formControlName="description"
+          rows="5"
+          placeholder="Describe your event, what attendees can expect, special guests, etc."
+          [class.invalid]="eventForm.get('description')?.invalid && eventForm.get('description')?.touched"
+        ></textarea>
+        <div *ngIf="eventForm.get('description')?.invalid && eventForm.get('description')?.touched" class="error-text">
+          Description is required (minimum 10 characters)
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="eventType">Event Type *</label>
+        <select
+          id="eventType"
+          formControlName="eventType"
+          [class.invalid]="eventForm.get('eventType')?.invalid && eventForm.get('eventType')?.touched"
+        >
+          <option value="">Select event type</option>
+          <option *ngFor="let type of eventTypeOptions" [value]="type">{{ type }}</option>
+        </select>
+        <div *ngIf="eventForm.get('eventType')?.invalid && eventForm.get('eventType')?.touched" class="error-text">
+          Event type is required
+        </div>
+      </div>
+    </div>
+
+    <!-- Date and Time -->
+    <div class="form-section">
+      <h2>Date and Time</h2>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="startDate">Start Date *</label>
+          <input
+            type="date"
+            id="startDate"
+            formControlName="startDate"
+            [class.invalid]="eventForm.get('startDate')?.invalid && eventForm.get('startDate')?.touched"
+          />
+          <div *ngIf="eventForm.get('startDate')?.invalid && eventForm.get('startDate')?.touched" class="error-text">
+            Start date is required
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="endDate">End Date</label>
+          <input
+            type="date"
+            id="endDate"
+            formControlName="endDate"
+          />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="startTime">Start Time *</label>
+          <input
+            type="time"
+            id="startTime"
+            formControlName="startTime"
+            [class.invalid]="eventForm.get('startTime')?.invalid && eventForm.get('startTime')?.touched"
+          />
+          <div *ngIf="eventForm.get('startTime')?.invalid && eventForm.get('startTime')?.touched" class="error-text">
+            Start time is required
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="endTime">End Time</label>
+          <input
+            type="time"
+            id="endTime"
+            formControlName="endTime"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Venue -->
+    <div class="form-section">
+      <h2>Venue</h2>
+
+      <div class="form-group">
+        <label for="venueId">Select Venue *</label>
+        <select
+          id="venueId"
+          formControlName="venueId"
+          [class.invalid]="eventForm.get('venueId')?.invalid && eventForm.get('venueId')?.touched"
+        >
+          <option value="">Select a venue</option>
+          <option *ngFor="let venue of venues" [value]="venue.id">
+            {{ venue.name }} - {{ venue.city }}, {{ venue.state }}
+          </option>
+        </select>
+        <div *ngIf="eventForm.get('venueId')?.invalid && eventForm.get('venueId')?.touched" class="error-text">
+          Venue is required
+        </div>
+        <div *ngIf="isLoadingVenues" class="loading-text">Loading venues...</div>
+        <div *ngIf="!isLoadingVenues && venues.length === 0" class="info-text">
+          No venues available yet. Please add a venue first.
+        </div>
+      </div>
+    </div>
+
+    <!-- Performers -->
+    <div class="form-section">
+      <h2>Performers</h2>
+
+      <div class="form-group">
+        <label for="performerIds">Select Performers (hold Ctrl/Cmd to select multiple)</label>
+        <select
+          id="performerIds"
+          multiple
+          size="5"
+          (change)="onPerformerChange($event)"
+          class="multi-select"
+        >
+          <option *ngFor="let performer of performers" [value]="performer.id">
+            {{ performer.name }}
+          </option>
+        </select>
+        <div *ngIf="isLoadingPerformers" class="loading-text">Loading performers...</div>
+        <div *ngIf="!isLoadingPerformers && performers.length === 0" class="info-text">
+          No performers available yet.
+        </div>
+      </div>
+    </div>
+
+    <!-- Tickets -->
+    <div class="form-section">
+      <h2>Ticket Information</h2>
+
+      <div class="form-group">
+        <label for="ticketPrice">Ticket Price</label>
+        <input
+          type="text"
+          id="ticketPrice"
+          formControlName="ticketPrice"
+          placeholder="e.g., Free, $10, $15-$25"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="ticketUrl">Ticket Purchase URL</label>
+        <input
+          type="url"
+          id="ticketUrl"
+          formControlName="ticketUrl"
+          placeholder="https://example.com/tickets"
+        />
+      </div>
+    </div>
+
+    <!-- Additional Details -->
+    <div class="form-section">
+      <h2>Additional Details</h2>
+
+      <div class="form-group">
+        <label for="ageRestriction">Age Restriction</label>
+        <select id="ageRestriction" formControlName="ageRestriction">
+          <option *ngFor="let age of ageRestrictionOptions" [value]="age">{{ age }}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="accessibility">Accessibility Information</label>
+        <textarea
+          id="accessibility"
+          formControlName="accessibility"
+          rows="3"
+          placeholder="Describe accessibility features, wheelchair access, etc."
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="tags">Tags (comma-separated)</label>
+        <input
+          type="text"
+          id="tags"
+          formControlName="tags"
+          placeholder="e.g., Pride, Charity, LGBTQ+, Drag"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="contactEmail">Contact Email</label>
+        <input
+          type="email"
+          id="contactEmail"
+          formControlName="contactEmail"
+          placeholder="contact@example.com"
+          [class.invalid]="eventForm.get('contactEmail')?.invalid && eventForm.get('contactEmail')?.touched"
+        />
+        <div *ngIf="eventForm.get('contactEmail')?.invalid && eventForm.get('contactEmail')?.touched" class="error-text">
+          Please enter a valid email address
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="form-actions">
+      <button
+        type="submit"
+        class="btn-primary"
+        [disabled]="isSubmitting"
+      >
+        {{ isSubmitting ? 'Submitting...' : 'Submit Event' }}
+      </button>
+    </div>
+
+  </form>
+</div>

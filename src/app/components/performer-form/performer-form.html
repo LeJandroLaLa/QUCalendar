@@ -1,0 +1,239 @@
+<div class="form-container">
+  <h1>Performer Profile Registration</h1>
+  <p class="subtitle">Share your talent with the QUeer Community!</p>
+
+  <form [formGroup]="performerForm" (ngSubmit)="onSubmit()">
+
+    <!-- Success Message -->
+    <div *ngIf="submitSuccess" class="alert alert-success">
+      ✓ Your profile has been submitted successfully!
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="alert alert-error">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Profile Image Upload -->
+    <div class="form-section">
+      <h2>Profile Photo</h2>
+      <div class="image-upload">
+        <div *ngIf="!imagePreview" class="upload-placeholder">
+          <input
+            type="file"
+            id="profileImage"
+            accept="image/*"
+            (change)="onImageSelected($event)"
+            class="file-input"
+          />
+          <label for="profileImage" class="upload-label">
+            <span class="upload-icon">📸</span>
+            <span>Click to upload profile photo</span>
+            <span class="upload-hint">Max size: 5MB</span>
+          </label>
+        </div>
+        <div *ngIf="imagePreview" class="image-preview">
+          <img [src]="imagePreview" alt="Profile preview" />
+          <button type="button" (click)="removeImage()" class="btn-remove">Remove</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Basic Information -->
+    <div class="form-section">
+      <h2>Basic Information</h2>
+
+      <div class="form-group">
+        <label for="name">Name / Stage Name *</label>
+        <input
+          type="text"
+          id="name"
+          formControlName="name"
+          placeholder="Enter your name or stage name"
+          [class.invalid]="performerForm.get('name')?.invalid && performerForm.get('name')?.touched"
+        />
+        <div *ngIf="performerForm.get('name')?.invalid && performerForm.get('name')?.touched" class="error-text">
+          Name is required (minimum 2 characters)
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="pronouns">Pronouns</label>
+        <input
+          type="text"
+          id="pronouns"
+          formControlName="pronouns"
+          placeholder="e.g., she/her, he/him, they/them"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="bio">Bio / Description *</label>
+        <textarea
+          id="bio"
+          formControlName="bio"
+          rows="5"
+          placeholder="Tell us about yourself and your performances..."
+          [class.invalid]="performerForm.get('bio')?.invalid && performerForm.get('bio')?.touched"
+        ></textarea>
+        <div *ngIf="performerForm.get('bio')?.invalid && performerForm.get('bio')?.touched" class="error-text">
+          Bio is required (minimum 10 characters)
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Information -->
+    <div class="form-section">
+      <h2>Contact Information</h2>
+
+      <div class="form-group">
+        <label for="email">Email *</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          placeholder="your.email@example.com"
+          [class.invalid]="performerForm.get('email')?.invalid && performerForm.get('email')?.touched"
+        />
+        <div *ngIf="performerForm.get('email')?.invalid && performerForm.get('email')?.touched" class="error-text">
+          Valid email is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input
+          type="tel"
+          id="phone"
+          formControlName="phone"
+          placeholder="(555) 123-4567"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="website">Website</label>
+        <input
+          type="url"
+          id="website"
+          formControlName="website"
+          placeholder="https://yourwebsite.com"
+        />
+      </div>
+    </div>
+
+    <!-- Social Media -->
+    <div class="form-section">
+      <h2>Social Media</h2>
+
+      <div class="form-group">
+        <label for="instagram">Instagram</label>
+        <input
+          type="text"
+          id="instagram"
+          formControlName="instagram"
+          placeholder="@yourusername"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="facebook">Facebook</label>
+        <input
+          type="text"
+          id="facebook"
+          formControlName="facebook"
+          placeholder="facebook.com/yourpage"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="twitter">Twitter/X</label>
+        <input
+          type="text"
+          id="twitter"
+          formControlName="twitter"
+          placeholder="@yourusername"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="tiktok">TikTok</label>
+        <input
+          type="text"
+          id="tiktok"
+          formControlName="tiktok"
+          placeholder="@yourusername"
+        />
+      </div>
+    </div>
+
+    <!-- Performance Types -->
+    <div class="form-section">
+      <h2>Performance Types</h2>
+      <p class="section-hint">Select all that apply</p>
+
+      <div formGroupName="performanceTypes" class="checkbox-group">
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="dragPerformance" />
+          <span>Drag Performance</span>
+        </label>
+
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="standUpComedy" />
+          <span>Stand-up Comedy</span>
+        </label>
+
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="burlesque" />
+          <span>Burlesque</span>
+        </label>
+
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="musicLiveBand" />
+          <span>Music - Live Band</span>
+        </label>
+
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="musicDJ" />
+          <span>Music - DJ</span>
+        </label>
+
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="theater" />
+          <span>Theater</span>
+        </label>
+
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="dance" />
+          <span>Dance</span>
+        </label>
+
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="poetrySpokenWord" />
+          <span>Poetry/Spoken Word</span>
+        </label>
+
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="cabaret" />
+          <span>Cabaret</span>
+        </label>
+
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="other" />
+          <span>Other</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="form-actions">
+      <button
+        type="submit"
+        class="btn-primary"
+        [disabled]="isSubmitting"
+      >
+        {{ isSubmitting ? 'Submitting...' : 'Submit Profile' }}
+      </button>
+    </div>
+
+  </form>
+</div>

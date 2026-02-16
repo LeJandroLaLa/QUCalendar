@@ -1,0 +1,301 @@
+<div class="form-container">
+  <h1>Venue Profile Registration</h1>
+  <p class="subtitle">Host amazing QUeer events at your venue!</p>
+
+  <form [formGroup]="venueForm" (ngSubmit)="onSubmit()">
+
+    <!-- Success Message -->
+    <div *ngIf="submitSuccess" class="alert alert-success">
+      ✓ Your venue profile has been submitted successfully!
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="alert alert-error">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Venue Image Upload -->
+    <div class="form-section">
+      <h2>Venue Photo</h2>
+      <div class="image-upload">
+        <div *ngIf="!imagePreview" class="upload-placeholder">
+          <input
+            type="file"
+            id="venueImage"
+            accept="image/*"
+            (change)="onImageSelected($event)"
+            class="file-input"
+          />
+          <label for="venueImage" class="upload-label">
+            <span class="upload-icon">🏛️</span>
+            <span>Click to upload venue photo</span>
+            <span class="upload-hint">Max size: 5MB</span>
+          </label>
+        </div>
+        <div *ngIf="imagePreview" class="image-preview">
+          <img [src]="imagePreview" alt="Venue preview" />
+          <button type="button" (click)="removeImage()" class="btn-remove">Remove</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Basic Information -->
+    <div class="form-section">
+      <h2>Venue Information</h2>
+
+      <div class="form-group">
+        <label for="name">Venue Name *</label>
+        <input
+          type="text"
+          id="name"
+          formControlName="name"
+          placeholder="Enter venue name"
+          [class.invalid]="venueForm.get('name')?.invalid && venueForm.get('name')?.touched"
+        />
+        <div *ngIf="venueForm.get('name')?.invalid && venueForm.get('name')?.touched" class="error-text">
+          Venue name is required (minimum 2 characters)
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description *</label>
+        <textarea
+          id="description"
+          formControlName="description"
+          rows="5"
+          placeholder="Describe your venue, atmosphere, and what makes it special..."
+          [class.invalid]="venueForm.get('description')?.invalid && venueForm.get('description')?.touched"
+        ></textarea>
+        <div *ngIf="venueForm.get('description')?.invalid && venueForm.get('description')?.touched" class="error-text">
+          Description is required (minimum 10 characters)
+        </div>
+      </div>
+    </div>
+
+    <!-- Location -->
+    <div class="form-section">
+      <h2>Location</h2>
+
+      <div class="form-group">
+        <label for="address">Street Address *</label>
+        <input
+          type="text"
+          id="address"
+          formControlName="address"
+          placeholder="123 Main Street"
+          [class.invalid]="venueForm.get('address')?.invalid && venueForm.get('address')?.touched"
+        />
+        <div *ngIf="venueForm.get('address')?.invalid && venueForm.get('address')?.touched" class="error-text">
+          Address is required
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="city">City *</label>
+          <input
+            type="text"
+            id="city"
+            formControlName="city"
+            placeholder="City"
+            [class.invalid]="venueForm.get('city')?.invalid && venueForm.get('city')?.touched"
+          />
+          <div *ngIf="venueForm.get('city')?.invalid && venueForm.get('city')?.touched" class="error-text">
+            City is required
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="state">State *</label>
+          <input
+            type="text"
+            id="state"
+            formControlName="state"
+            placeholder="State"
+            [class.invalid]="venueForm.get('state')?.invalid && venueForm.get('state')?.touched"
+          />
+          <div *ngIf="venueForm.get('state')?.invalid && venueForm.get('state')?.touched" class="error-text">
+            State is required
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="zipCode">Zip Code *</label>
+          <input
+            type="text"
+            id="zipCode"
+            formControlName="zipCode"
+            placeholder="12345"
+            [class.invalid]="venueForm.get('zipCode')?.invalid && venueForm.get('zipCode')?.touched"
+          />
+          <div *ngIf="venueForm.get('zipCode')?.invalid && venueForm.get('zipCode')?.touched" class="error-text">
+            Zip code is required
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Information -->
+    <div class="form-section">
+      <h2>Contact Information</h2>
+
+      <div class="form-group">
+        <label for="email">Email *</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          placeholder="venue@example.com"
+          [class.invalid]="venueForm.get('email')?.invalid && venueForm.get('email')?.touched"
+        />
+        <div *ngIf="venueForm.get('email')?.invalid && venueForm.get('email')?.touched" class="error-text">
+          Valid email is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Phone Number *</label>
+        <input
+          type="tel"
+          id="phone"
+          formControlName="phone"
+          placeholder="(555) 123-4567"
+          [class.invalid]="venueForm.get('phone')?.invalid && venueForm.get('phone')?.touched"
+        />
+        <div *ngIf="venueForm.get('phone')?.invalid && venueForm.get('phone')?.touched" class="error-text">
+          Phone number is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="website">Website</label>
+        <input
+          type="url"
+          id="website"
+          formControlName="website"
+          placeholder="https://yourwebsite.com"
+        />
+      </div>
+    </div>
+
+    <!-- Social Media -->
+    <div class="form-section">
+      <h2>Social Media</h2>
+
+      <div class="form-group">
+        <label for="instagram">Instagram</label>
+        <input
+          type="text"
+          id="instagram"
+          formControlName="instagram"
+          placeholder="@venuename"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="facebook">Facebook</label>
+        <input
+          type="text"
+          id="facebook"
+          formControlName="facebook"
+          placeholder="facebook.com/venuepage"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="twitter">Twitter/X</label>
+        <input
+          type="text"
+          id="twitter"
+          formControlName="twitter"
+          placeholder="@venuename"
+        />
+      </div>
+    </div>
+
+    <!-- Venue Details -->
+    <div class="form-section">
+      <h2>Venue Details</h2>
+
+      <div class="form-group">
+        <label for="capacity">Capacity (approximate)</label>
+        <input
+          type="number"
+          id="capacity"
+          formControlName="capacity"
+          placeholder="e.g., 200"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="accessibility">Accessibility Features</label>
+        <textarea
+          id="accessibility"
+          formControlName="accessibility"
+          rows="3"
+          placeholder="Describe wheelchair access, elevators, accessible restrooms, etc."
+        ></textarea>
+      </div>
+    </div>
+
+    <!-- Amenities -->
+    <div class="form-section">
+      <h2>Amenities</h2>
+      <p class="section-hint">Select all that apply</p>
+
+      <div formGroupName="amenities" class="checkbox-group">
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="bar" />
+          <span>Bar</span>
+        </label>
+
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="fullKitchen" />
+          <span>Full Kitchen</span>
+        </label>
+
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="soundSystem" />
+          <span>Sound System</span>
+        </label>
+
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="stage" />
+          <span>Stage</span>
+        </label>
+
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="danceFloor" />
+          <span>Dance Floor</span>
+        </label>
+
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="outdoorSpace" />
+          <span>Outdoor Space</span>
+        </label>
+
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="parking" />
+          <span>Parking</span>
+        </label>
+
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="coatCheck" />
+          <span>Coat Check</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="form-actions">
+      <button
+        type="submit"
+        class="btn-primary"
+        [disabled]="isSubmitting"
+      >
+        {{ isSubmitting ? 'Submitting...' : 'Submit Venue Profile' }}
+      </button>
+    </div>
+
+  </form>
+</div>
