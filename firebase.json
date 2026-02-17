@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "dist/the-queer-calendar/browser",
+    "public": "dist/QUCalendar/browser",
     "ignore": [
       "firebase.json",
       "**/.*",
