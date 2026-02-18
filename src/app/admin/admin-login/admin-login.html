@@ -1,0 +1,18 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-logo">🏳️‍🌈</div>
+    <h2>QU Calendar</h2>
+    <p class="login-subtitle">Admin Panel</p>
+
+    <div class="error-banner" *ngIf="error()">
+      ⚠️ {{ error() }}
+    </div>
+
+    <button class="google-btn" (click)="signIn()" [disabled]="loading()">
+      <span class="google-icon">G</span>
+      {{ loading() ? 'Signing in...' : 'Sign in with Google' }}
+    </button>
+
+    <a routerLink="/" class="back-link">← Back to Calendar</a>
+  </div>
+</div>

@@ -37,6 +37,8 @@
                 [class.active-filter]="dateQuery() === 'weekend'">Weekend</button>
         <button class="filter-btn secondary" (click)="clearFilters()">Clear</button>
       </div>
+      <button class="filter-btn primary">Filter</button>
+    </div>
 
     <div class="event-type-section">
       <button class="event-type-toggle" (click)="toggleEventTypes()">
@@ -62,7 +64,7 @@
     <button [class.active]="activeView() === 'list'" (click)="setView('list')">List View</button>
   </div>
 
- <app-events
+  <app-events
     [locationFilter]="locationQuery()"
     [dateFilter]="dateQuery()"
     [categoryFilter]="selectedCategories()"

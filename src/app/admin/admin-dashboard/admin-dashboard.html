@@ -1,0 +1,184 @@
+<div class="admin-container">
+
+  <!-- HEADER -->
+  <div class="admin-header">
+    <div class="admin-header-left">
+      <h1>🏳️‍🌈 Admin Panel</h1>
+      <span class="admin-user">{{ authService.currentUser()?.email }}</span>
+    </div>
+    <div class="admin-header-right">
+      <a routerLink="/" class="btn secondary">← Back to Site</a>
+      <button class="btn danger" (click)="authService.signOutUser()">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- ACTION MESSAGE -->
+  <div class="action-message" *ngIf="actionMessage()">
+    {{ actionMessage() }}
+  </div>
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stat-card">
+      <div class="stat-number">{{ getTotalPending() }}</div>
+      <div class="stat-label">Pending Review</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ approvedVenues().length }}</div>
+      <div class="stat-label">Approved Venues</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ approvedArtists().length }}</div>
+      <div class="stat-label">Approved Artists</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ approvedEvents().length }}</div>
+      <div class="stat-label">Approved Events</div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tab-bar">
+    <button [class.active]="activeTab() === 'pending'"
+            (click)="activeTab.set('pending')">
+      Pending
+      <span class="badge" *ngIf="getTotalPending() > 0">{{ getTotalPending() }}</span>
+    </button>
+    <button [class.active]="activeTab() === 'approved'"
+            (click)="activeTab.set('approved')">
+      Approved
+    </button>
+  </div>
+
+  <!-- PENDING TAB -->
+  <div *ngIf="activeTab() === 'pending'">
+
+    <div class="no-pending" *ngIf="getTotalPending() === 0">
+      <div class="no-pending-icon">✅</div>
+      <p>Nothing pending — all caught up!</p>
+    </div>
+
+    <!-- PENDING VENUES -->
+    <div *ngIf="pendingVenues().length > 0">
+      <h2 class="section-title">🏛️ Venues ({{ pendingVenues().length }})</h2>
+      <div class="items-list">
+        <div class="item-card" *ngFor="let item of pendingVenues()">
+          <div class="item-avatar">{{ item.avatarEmoji || '🏛️' }}</div>
+          <div class="item-info">
+            <div class="item-name">{{ item.name }}</div>
+            <div class="item-subtitle">{{ getItemSubtitle(item) }}</div>
+            <div class="item-meta">Submitted {{ formatDate(item.createdAt) }}</div>
+          </div>
+          <div class="item-actions">
+            <a [routerLink]="['/profile/venues', item.id]" class="btn preview" target="_blank">Preview</a>
+            <button class="btn approve" (click)="approve(item)">✅ Approve</button>
+            <button class="btn reject" (click)="reject(item)">🗑️ Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PENDING ARTISTS -->
+    <div *ngIf="pendingArtists().length > 0">
+      <h2 class="section-title">🎤 Artists ({{ pendingArtists().length }})</h2>
+      <div class="items-list">
+        <div class="item-card" *ngFor="let item of pendingArtists()">
+          <div class="item-avatar">{{ item.avatarEmoji || '🎤' }}</div>
+          <div class="item-info">
+            <div class="item-name">{{ item.name }}</div>
+            <div class="item-subtitle">{{ getItemSubtitle(item) }}</div>
+            <div class="item-meta">Submitted {{ formatDate(item.createdAt) }}</div>
+          </div>
+          <div class="item-actions">
+            <a [routerLink]="['/profile/artists', item.id]" class="btn preview" target="_blank">Preview</a>
+            <button class="btn approve" (click)="approve(item)">✅ Approve</button>
+            <button class="btn reject" (click)="reject(item)">🗑️ Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PENDING EVENTS -->
+    <div *ngIf="pendingEvents().length > 0">
+      <h2 class="section-title">📅 Events ({{ pendingEvents().length }})</h2>
+      <div class="items-list">
+        <div class="item-card" *ngFor="let item of pendingEvents()">
+          <div class="item-avatar">📅</div>
+          <div class="item-info">
+            <div class="item-name">{{ item.name }}</div>
+            <div class="item-subtitle">{{ getItemSubtitle(item) }}</div>
+            <div class="item-meta">Submitted {{ formatDate(item.createdAt) }}</div>
+          </div>
+          <div class="item-actions">
+            <a [routerLink]="['/profile/events', item.id]" class="btn preview" target="_blank">Preview</a>
+            <button class="btn approve" (click)="approve(item)">✅ Approve</button>
+            <button class="btn reject" (click)="reject(item)">🗑️ Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- APPROVED TAB -->
+  <div *ngIf="activeTab() === 'approved'">
+
+    <!-- APPROVED VENUES -->
+    <div *ngIf="approvedVenues().length > 0">
+      <h2 class="section-title">🏛️ Venues ({{ approvedVenues().length }})</h2>
+      <div class="items-list">
+        <div class="item-card" *ngFor="let item of approvedVenues()">
+          <div class="item-avatar">{{ item.avatarEmoji || '🏛️' }}</div>
+          <div class="item-info">
+            <div class="item-name">{{ item.name }}</div>
+            <div class="item-subtitle">{{ getItemSubtitle(item) }}</div>
+          </div>
+          <div class="item-actions">
+            <a [routerLink]="['/profile/venues', item.id]" class="btn preview" target="_blank">View</a>
+            <button class="btn secondary" (click)="unapprove(item)">↩️ Unpublish</button>
+            <button class="btn reject" (click)="reject(item)">🗑️ Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- APPROVED ARTISTS -->
+    <div *ngIf="approvedArtists().length > 0">
+      <h2 class="section-title">🎤 Artists ({{ approvedArtists().length }})</h2>
+      <div class="items-list">
+        <div class="item-card" *ngFor="let item of approvedArtists()">
+          <div class="item-avatar">{{ item.avatarEmoji || '🎤' }}</div>
+          <div class="item-info">
+            <div class="item-name">{{ item.name }}</div>
+            <div class="item-subtitle">{{ getItemSubtitle(item) }}</div>
+          </div>
+          <div class="item-actions">
+            <a [routerLink]="['/profile/artists', item.id]" class="btn preview" target="_blank">View</a>
+            <button class="btn secondary" (click)="unapprove(item)">↩️ Unpublish</button>
+            <button class="btn reject" (click)="reject(item)">🗑️ Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- APPROVED EVENTS -->
+    <div *ngIf="approvedEvents().length > 0">
+      <h2 class="section-title">📅 Events ({{ approvedEvents().length }})</h2>
+      <div class="items-list">
+        <div class="item-card" *ngFor="let item of approvedEvents()">
+          <div class="item-avatar">📅</div>
+          <div class="item-info">
+            <div class="item-name">{{ item.name }}</div>
+            <div class="item-subtitle">{{ getItemSubtitle(item) }}</div>
+          </div>
+          <div class="item-actions">
+            <a [routerLink]="['/profile/events', item.id]" class="btn preview" target="_blank">View</a>
+            <button class="btn secondary" (click)="unapprove(item)">↩️ Unpublish</button>
+            <button class="btn reject" (click)="reject(item)">🗑️ Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
