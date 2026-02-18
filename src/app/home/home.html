@@ -7,6 +7,14 @@
   <div class="filter-section">
     <div class="filter-inputs">
       <div class="input-group">
+        <span class="input-icon">🔍</span>
+        <input type="text"
+               placeholder="Search events..."
+               class="filter-input"
+               [ngModel]="keywordQuery()"
+               (ngModelChange)="keywordQuery.set($event)">
+      </div>
+      <div class="input-group">
         <span class="input-icon">📍</span>
         <input type="text"
                placeholder="Location"
@@ -54,10 +62,11 @@
     <button [class.active]="activeView() === 'list'" (click)="setView('list')">List View</button>
   </div>
 
-  <app-events
+ <app-events
     [locationFilter]="locationQuery()"
     [dateFilter]="dateQuery()"
     [categoryFilter]="selectedCategories()"
+    [keywordFilter]="keywordQuery()"
     [viewMode]="activeView()">
   </app-events>
 </div>

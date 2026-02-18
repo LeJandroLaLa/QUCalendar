@@ -23,6 +23,7 @@ interface DayGroup {
 })
 export class EventsComponent implements OnInit, OnChanges, OnDestroy {
   @Input() locationFilter: string = '';
+  @Input() keywordFilter: string = '';
   @Input() dateFilter: string = '';
   @Input() categoryFilter: string[] = [];
   @Input() viewMode: 'calendar' | 'list' = 'calendar';
@@ -86,41 +87,52 @@ export class EventsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private applyFilters(): void {
-    let events = [...this.allEvents];
+  let events = [...this.allEvents];
 
-    // Location filter
-    if (this.locationFilter && this.locationFilter.trim()) {
-      const q = this.locationFilter.toLowerCase().trim();
-      events = events.filter(e =>
-        e.venueName.toLowerCase().includes(q) ||
-        e.venueAddress.toLowerCase().includes(q)
-      );
-    }
-
-    // Date filter
-    if (this.dateFilter) {
-      if (this.dateFilter === 'weekend') {
-        events = events.filter(e => {
-          const day = new Date(e.date + 'T00:00:00').getDay();
-          return day === 0 || day === 6;
-        });
-      } else if (this.dateFilter.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
-        const parts = this.dateFilter.split('/');
-        const isoDate = `${parts[2]}-${parts[0]}-${parts[1]}`;
-        events = events.filter(e => e.date === isoDate);
-      }
-    }
-
-    // Category filter
-    if (this.categoryFilter && this.categoryFilter.length > 0) {
-      events = events.filter(e =>
-        this.categoryFilter.some(cat => e.category.includes(cat))
-      );
-    }
-
-    this.flatEvents.set(events);
-    this.dayGroups.set(this.groupByDay(events));
+  // Location filter
+  if (this.locationFilter && this.locationFilter.trim()) {
+    const q = this.locationFilter.toLowerCase().trim();
+    events = events.filter(e =>
+      e.venueName.toLowerCase().includes(q) ||
+      e.venueAddress.toLowerCase().includes(q)
+    );
   }
+
+  // Keyword filter — matches name, venue, description, categories
+  if (this.keywordFilter && this.keywordFilter.trim()) {
+    const q = this.keywordFilter.toLowerCase().trim();
+    events = events.filter(e =>
+      e.name.toLowerCase().includes(q) ||
+      e.venueName.toLowerCase().includes(q) ||
+      e.description.toLowerCase().includes(q) ||
+      e.category.some(cat => cat.toLowerCase().includes(q))
+    );
+  }
+
+  // Date filter
+  if (this.dateFilter) {
+    if (this.dateFilter === 'weekend') {
+      events = events.filter(e => {
+        const day = new Date(e.date + 'T00:00:00').getDay();
+        return day === 0 || day === 6;
+      });
+    } else if (this.dateFilter.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+      const parts = this.dateFilter.split('/');
+      const isoDate = `${parts[2]}-${parts[0]}-${parts[1]}`;
+      events = events.filter(e => e.date === isoDate);
+    }
+  }
+
+  // Category filter
+  if (this.categoryFilter && this.categoryFilter.length > 0) {
+    events = events.filter(e =>
+      this.categoryFilter.some(cat => e.category.includes(cat))
+    );
+  }
+
+  this.flatEvents.set(events);
+  this.dayGroups.set(this.groupByDay(events));
+}
 
   private groupByDay(events: EventProfile[]): DayGroup[] {
     const map = new Map<string, EventProfile[]>();

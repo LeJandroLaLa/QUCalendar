@@ -14,6 +14,7 @@ export class HomeComponent {
   // Filter state
   locationQuery = signal('');
   dateQuery = signal('');
+  keywordQuery = signal('');
   selectedCategories = signal<string[]>([]);
   activeView = signal<'calendar' | 'list'>('calendar');
   showEventTypes = signal(true);
@@ -73,11 +74,12 @@ export class HomeComponent {
     }
   }
 
-  clearFilters(): void {
-    this.locationQuery.set('');
-    this.dateQuery.set('');
-    this.selectedCategories.set([]);
-  }
+ clearFilters(): void {
+  this.locationQuery.set('');
+  this.dateQuery.set('');
+  this.keywordQuery.set('');
+  this.selectedCategories.set([]);
+}
 
   // View toggle
   setView(view: 'calendar' | 'list'): void {
