@@ -10,5 +10,5 @@ import { FooterComponent } from './footer/footer';
   styleUrl: './app.css'
 })
 export class App {
-  protected readonly title = signal('the-queer-calendar');
+  protected readonly title = signal('QUCalendar');
 }
