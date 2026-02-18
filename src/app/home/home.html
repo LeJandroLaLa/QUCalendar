@@ -30,13 +30,13 @@
                (ngModelChange)="dateQuery.set($event)">
         <span class="input-icon-right">📅</span>
       </div>
-      <button class="filter-btn secondary" (click)="setToday()"
-              [class.active-filter]="dateQuery() && dateQuery() !== 'weekend'">Today</button>
-      <button class="filter-btn secondary" (click)="setWeekend()"
-              [class.active-filter]="dateQuery() === 'weekend'">Weekend</button>
-      <button class="filter-btn secondary" (click)="clearFilters()">Clear</button>
-      <button class="filter-btn primary">Filter</button>
-    </div>
+      <div class="filter-btn-row">
+        <button class="filter-btn secondary" (click)="setToday()"
+                [class.active-filter]="dateQuery() && dateQuery() !== 'weekend'">Today</button>
+        <button class="filter-btn secondary" (click)="setWeekend()"
+                [class.active-filter]="dateQuery() === 'weekend'">Weekend</button>
+        <button class="filter-btn secondary" (click)="clearFilters()">Clear</button>
+      </div>
 
     <div class="event-type-section">
       <button class="event-type-toggle" (click)="toggleEventTypes()">
