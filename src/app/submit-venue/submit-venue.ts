@@ -61,6 +61,22 @@ export class SubmitVenueComponent {
     'Dog Friendly', 'All Ages', '21+', 'Private Rooms', 'AV Equipment'
   ];
 
+  venueTypeEmojis: Record<string, string> = {
+  'Restaurant': '🍽️',
+  'Theatre': '🎭',
+  'Events Space': '🎪',
+  'Bar': '🍺',
+  'Night Club': '🌟',
+  'Park / Public Space': '🌳',
+  'Community Center': '🤝',
+  'Gallery / Museum': '🎨',
+  'Private Venue': '🏛️'
+};
+
+onVenueTypeChange(): void {
+  this.form.avatarEmoji = this.venueTypeEmojis[this.form.venueType] || '🏛️';
+}
+
   constructor(private firestore: Firestore) {}
 
   toggleAmenity(amenity: string): void {

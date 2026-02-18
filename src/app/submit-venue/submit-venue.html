@@ -47,17 +47,10 @@
 
         <div class="form-group">
           <label>Venue Type *</label>
-          <select [(ngModel)]="form.venueType" name="venueType">
+          <select [(ngModel)]="form.venueType" name="venueType" (ngModelChange)="onVenueTypeChange()">
             <option value="">-- Select Type --</option>
             <option *ngFor="let vt of venueTypes" [value]="vt">{{ vt }}</option>
           </select>
-        </div>
-
-        <div class="form-group">
-          <label>Avatar Emoji</label>
-          <input type="text" [(ngModel)]="form.avatarEmoji" name="avatarEmoji"
-                 placeholder="e.g. 🏛️" maxlength="2">
-          <span class="field-hint">Single emoji that represents your venue</span>
         </div>
         
         <div class="form-group">
@@ -67,7 +60,6 @@
             (imageUrlChange)="form.venueImageUrl = $event">
           </app-image-upload>
         </div>
-
         <div class="form-group">
           <label>Tags</label>
           <input type="text" [(ngModel)]="form.tags" name="tags"
