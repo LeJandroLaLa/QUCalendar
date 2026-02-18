@@ -1,0 +1,62 @@
+<div class="image-upload-container">
+  <label class="upload-label">{{ label }}</label>
+
+  <!-- MODE TOGGLE -->
+  <div class="mode-toggle">
+    <button type="button"
+            (click)="setMode('file')"
+            [class.active]="uploadMode() === 'file'">
+      📱 Upload Photo
+    </button>
+    <button type="button"
+            (click)="setMode('url')"
+            [class.active]="uploadMode() === 'url'">
+      🔗 Paste URL
+    </button>
+  </div>
+
+  <!-- FILE UPLOAD MODE -->
+  <div *ngIf="uploadMode() === 'file'" class="upload-area">
+    <div class="drop-zone" [class.has-preview]="preview()">
+      <img *ngIf="preview()" [src]="preview()" alt="Preview" class="preview-image">
+      <div *ngIf="!preview()" class="drop-zone-placeholder">
+        <div class="drop-icon">📷</div>
+        <div class="drop-text">Tap to choose a photo</div>
+        <div class="drop-hint">JPG, PNG, WebP — max 10MB</div>
+      </div>
+      <input type="file"
+             accept="image/*"
+             class="file-input"
+             (change)="onFileSelected($event)">
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="progress-bar-container" *ngIf="uploading()">
+      <div class="progress-bar" [style.width.%]="uploadProgress()"></div>
+      <span class="progress-text">{{ uploadProgress() }}%</span>
+    </div>
+
+    <!-- CLEAR BUTTON -->
+    <button type="button" class="clear-btn" *ngIf="preview() && !uploading()" (click)="clearImage()">
+      ✕ Remove Image
+    </button>
+  </div>
+
+  <!-- URL MODE -->
+  <div *ngIf="uploadMode() === 'url'" class="url-area">
+    <input type="url"
+           placeholder="https://example.com/image.jpg"
+           class="url-input"
+           [ngModel]="urlInput()"
+           (ngModelChange)="onUrlInput($event)">
+    <div class="url-preview" *ngIf="preview()">
+      <img [src]="preview()" alt="Preview" class="preview-image">
+      <button type="button" class="clear-btn" (click)="clearImage()">✕ Remove</button>
+    </div>
+  </div>
+
+  <!-- ERROR -->
+  <div class="upload-error" *ngIf="error()">
+    ⚠️ {{ error() }}
+  </div>
+</div>

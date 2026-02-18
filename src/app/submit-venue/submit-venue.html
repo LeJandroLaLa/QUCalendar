@@ -1,0 +1,228 @@
+<div class="container">
+
+  <!-- SUCCESS STATE -->
+  <div class="success-card" *ngIf="submitted()">
+    <div class="success-icon">🎉</div>
+    <h2>Venue Submitted!</h2>
+    <p>Thank you for submitting your venue. It will be reviewed and published shortly.</p>
+    <div class="success-actions">
+      <button class="btn primary" (click)="resetForm()">Submit Another Venue</button>
+      <a routerLink="/venues" class="btn secondary">Browse Venues</a>
+    </div>
+  </div>
+
+  <!-- FORM STATE -->
+  <div *ngIf="!submitted()">
+    <div class="hero">
+      <h2>Submit Your Venue</h2>
+      <p>Add your LGBTQ+ friendly space to the QU Calendar directory.</p>
+    </div>
+
+    <form class="submit-form" (ngSubmit)="onSubmit()">
+
+      <!-- ERROR MESSAGE -->
+      <div class="error-banner" *ngIf="error()">
+        ⚠️ {{ error() }}
+      </div>
+
+      <!-- BASIC INFO -->
+      <div class="form-section">
+        <h3>Basic Information</h3>
+
+        <div class="form-group">
+          <label>Venue Name *</label>
+          <input type="text" [(ngModel)]="form.name" name="name" placeholder="e.g. Below Zero Lounge">
+        </div>
+
+        <div class="form-group">
+          <label>Tagline</label>
+          <input type="text" [(ngModel)]="form.tagline" name="tagline" placeholder="A short catchy description">
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea [(ngModel)]="form.description" name="description" rows="4"
+                    placeholder="Tell us about your venue..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Venue Type *</label>
+          <select [(ngModel)]="form.venueType" name="venueType">
+            <option value="">-- Select Type --</option>
+            <option *ngFor="let vt of venueTypes" [value]="vt">{{ vt }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Avatar Emoji</label>
+          <input type="text" [(ngModel)]="form.avatarEmoji" name="avatarEmoji"
+                 placeholder="e.g. 🏛️" maxlength="2">
+          <span class="field-hint">Single emoji that represents your venue</span>
+        </div>
+        
+        <div class="form-group">
+          <app-image-upload
+            folder="venues"
+            label="Venue Photo"
+            (imageUrlChange)="form.venueImageUrl = $event">
+          </app-image-upload>
+        </div>
+
+        <div class="form-group">
+          <label>Tags</label>
+          <input type="text" [(ngModel)]="form.tags" name="tags"
+                 placeholder="e.g. Bar, Drag Shows, Live Music (comma separated)">
+          <span class="field-hint">Comma separated list of tags</span>
+        </div>
+      </div>
+
+      <!-- LOCATION -->
+      <div class="form-section">
+        <h3>Location</h3>
+
+        <div class="form-group">
+          <label>Street Address *</label>
+          <input type="text" [(ngModel)]="form.address" name="address" placeholder="e.g. 1120 Walnut St">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>City *</label>
+            <input type="text" [(ngModel)]="form.city" name="city" placeholder="e.g. Cincinnati">
+          </div>
+          <div class="form-group form-group-sm">
+            <label>State *</label>
+            <input type="text" [(ngModel)]="form.state" name="state" placeholder="OH" maxlength="2">
+          </div>
+          <div class="form-group form-group-sm">
+            <label>Zip Code</label>
+            <input type="text" [(ngModel)]="form.zipCode" name="zipCode" placeholder="45202">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Parking</label>
+          <input type="text" [(ngModel)]="form.parking" name="parking"
+                 placeholder="e.g. Street parking, garage 1 block east">
+        </div>
+
+        <div class="form-group">
+          <label>Public Transit</label>
+          <input type="text" [(ngModel)]="form.transit" name="transit"
+                 placeholder="e.g. Metro Stop: Walnut & 12th">
+        </div>
+
+        <div class="form-group checkbox-group">
+          <label>
+            <input type="checkbox" [(ngModel)]="form.isAccessible" name="isAccessible">
+            Wheelchair Accessible
+          </label>
+        </div>
+      </div>
+
+      <!-- CONTACT -->
+      <div class="form-section">
+        <h3>Contact Information</h3>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" [(ngModel)]="form.contactEmail" name="contactEmail"
+                   placeholder="info@yourvenue.com">
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" [(ngModel)]="form.contactPhone" name="contactPhone"
+                   placeholder="(513) 555-0000">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Website</label>
+            <input type="url" [(ngModel)]="form.website" name="website"
+                   placeholder="https://yourvenue.com">
+          </div>
+          <div class="form-group">
+            <label>Booking URL</label>
+            <input type="url" [(ngModel)]="form.bookingUrl" name="bookingUrl"
+                   placeholder="https://yourvenue.com/book">
+          </div>
+        </div>
+
+        <div class="form-section-sub">
+          <h4>Social Media</h4>
+          <div class="form-group">
+            <label>📘 Facebook URL</label>
+            <input type="url" [(ngModel)]="form.socialLinks.facebook" name="facebook"
+                   placeholder="https://facebook.com/yourvenue">
+          </div>
+          <div class="form-group">
+            <label>📸 Instagram URL</label>
+            <input type="url" [(ngModel)]="form.socialLinks.instagram" name="instagram"
+                   placeholder="https://instagram.com/yourvenue">
+          </div>
+          <div class="form-group">
+            <label>🐦 Twitter/X URL</label>
+            <input type="url" [(ngModel)]="form.socialLinks.twitter" name="twitter"
+                   placeholder="https://twitter.com/yourvenue">
+          </div>
+        </div>
+      </div>
+
+      <!-- DETAILS -->
+      <div class="form-section">
+        <h3>Venue Details</h3>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Capacity</label>
+            <input type="number" [(ngModel)]="form.capacity" name="capacity" placeholder="e.g. 150">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Features</label>
+          <input type="text" [(ngModel)]="form.features" name="features"
+                 placeholder="e.g. Full Bar, Rooftop Patio, Sound System (comma separated)">
+          <span class="field-hint">These appear as feature badges on your venue page</span>
+        </div>
+
+        <div class="form-group">
+          <label>Amenities</label>
+          <div class="amenity-grid">
+            <div class="amenity-item"
+                 *ngFor="let amenity of amenityOptions"
+                 (click)="toggleAmenity(amenity)"
+                 [class.selected]="isAmenitySelected(amenity)">
+              {{ amenity }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HOURS -->
+      <div class="form-section">
+        <h3>Hours of Operation</h3>
+        <span class="field-hint">Leave blank for closed days</span>
+
+        <div class="hours-grid">
+          <div class="hours-row" *ngFor="let h of form.hours">
+            <span class="hours-day">{{ h.day }}</span>
+            <input type="text" [(ngModel)]="h.time" [name]="'hours-' + h.day"
+                   placeholder="e.g. 5:00 PM — 2:00 AM or Closed">
+          </div>
+        </div>
+      </div>
+
+      <!-- SUBMIT -->
+      <div class="form-actions">
+        <button type="submit" class="btn primary" [disabled]="submitting()">
+          {{ submitting() ? 'Submitting...' : 'Submit Venue' }}
+        </button>
+        <a routerLink="/" class="btn secondary">Cancel</a>
+      </div>
+
+    </form>
+  </div>
+</div>

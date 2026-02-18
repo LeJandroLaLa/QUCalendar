@@ -1,0 +1,154 @@
+<div class="container">
+
+  <!-- SUCCESS STATE -->
+  <div class="success-card" *ngIf="submitted()">
+    <div class="success-icon">🎉</div>
+    <h2>Artist Submitted!</h2>
+    <p>Thank you for submitting your profile. It will be reviewed and published shortly.</p>
+    <div class="success-actions">
+      <button class="btn primary" (click)="resetForm()">Submit Another Artist</button>
+      <a routerLink="/" class="btn secondary">Back to Calendar</a>
+    </div>
+  </div>
+
+  <!-- FORM STATE -->
+  <div *ngIf="!submitted()">
+    <div class="hero">
+      <h2>Submit Your Artist Profile</h2>
+      <p>Add yourself or your act to the QU Calendar artist directory.</p>
+    </div>
+
+    <form class="submit-form" (ngSubmit)="onSubmit()">
+
+      <!-- ERROR MESSAGE -->
+      <div class="error-banner" *ngIf="error()">
+        ⚠️ {{ error() }}
+      </div>
+
+      <!-- BASIC INFO -->
+      <div class="form-section">
+        <h3>Basic Information</h3>
+
+        <div class="form-group">
+          <label>Artist / Stage Name *</label>
+          <input type="text" [(ngModel)]="form.name" name="name"
+                 placeholder="e.g. Anita Cocktail">
+        </div>
+
+        <div class="form-group">
+          <label>Tagline</label>
+          <input type="text" [(ngModel)]="form.tagline" name="tagline"
+                 placeholder="A short catchy description of your act">
+        </div>
+
+        <div class="form-group">
+          <label>Bio / Description</label>
+          <textarea [(ngModel)]="form.description" name="description" rows="4"
+                    placeholder="Tell us about yourself and your act..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Based In</label>
+            <input type="text" [(ngModel)]="form.basedIn" name="basedIn"
+                   placeholder="e.g. Cincinnati, OH">
+          </div>
+          <div class="form-group">
+            <label>Avatar Emoji</label>
+            <input type="text" [(ngModel)]="form.avatarEmoji" name="avatarEmoji"
+                   placeholder="e.g. 👑" maxlength="2">
+          </div>
+          
+        </div>
+        <div class="form-group">
+          <app-image-upload
+            folder="artists"
+            label="Artist Photo"
+            (imageUrlChange)="form.artistImageUrl = $event">
+          </app-image-upload>
+        </div>
+
+        <div class="form-group checkbox-group">
+          <label>
+            <input type="checkbox" [(ngModel)]="form.willTravel" name="willTravel">
+            Available to travel outside home city
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label>Tags</label>
+          <input type="text" [(ngModel)]="form.tags" name="tags"
+                 placeholder="e.g. Drag, Comedy, Pride Events (comma separated)">
+        </div>
+      </div>
+
+      <!-- PERFORMANCE TYPES -->
+      <div class="form-section">
+        <h3>Performance Types *</h3>
+        <span class="field-hint">Select all that apply</span>
+        <div class="type-grid">
+          <div class="type-item"
+               *ngFor="let pt of performanceTypeOptions"
+               (click)="togglePerformanceType(pt)"
+               [class.selected]="isPerformanceTypeSelected(pt)">
+            {{ getPerformanceIcon(pt) }} {{ pt }}
+          </div>
+        </div>
+      </div>
+
+      <!-- BOOKING -->
+      <div class="form-section">
+        <h3>Booking Information</h3>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Booking Email *</label>
+            <input type="email" [(ngModel)]="form.bookingEmail" name="bookingEmail"
+                   placeholder="booking@yourname.com">
+          </div>
+          <div class="form-group">
+            <label>Booking Phone</label>
+            <input type="tel" [(ngModel)]="form.bookingPhone" name="bookingPhone"
+                   placeholder="(513) 555-0000">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Rates / Availability Info</label>
+          <textarea [(ngModel)]="form.ratesInfo" name="ratesInfo" rows="3"
+                    placeholder="e.g. Available weekends, rates starting at $200. Contact for packages."></textarea>
+        </div>
+      </div>
+
+      <!-- SOCIAL MEDIA -->
+      <div class="form-section">
+        <h3>Social Media</h3>
+
+        <div class="form-group">
+          <label>📘 Facebook URL</label>
+          <input type="url" [(ngModel)]="form.socialLinks.facebook" name="facebook"
+                 placeholder="https://facebook.com/yourpage">
+        </div>
+        <div class="form-group">
+          <label>📸 Instagram URL</label>
+          <input type="url" [(ngModel)]="form.socialLinks.instagram" name="instagram"
+                 placeholder="https://instagram.com/yourhandle">
+        </div>
+        <div class="form-group">
+          <label>🐦 Twitter/X URL</label>
+          <input type="url" [(ngModel)]="form.socialLinks.twitter" name="twitter"
+                 placeholder="https://twitter.com/yourhandle">
+        </div>
+      </div>
+
+      <!-- SUBMIT -->
+      <div class="form-actions">
+        <button type="submit" class="btn primary" [disabled]="submitting()">
+          {{ submitting() ? 'Submitting...' : 'Submit Artist Profile' }}
+        </button>
+        <a routerLink="/" class="btn secondary">Cancel</a>
+      </div>
+
+    </form>
+  </div>
+</div>
