@@ -1,1 +1,199 @@
-<p>submit-event works!</p>
+<div class="container">
+
+  <!-- SUCCESS STATE -->
+  <div class="success-card" *ngIf="submitted()">
+    <div class="success-icon">🎉</div>
+    <h2>Event Submitted!</h2>
+    <p>Thank you for submitting your event. It will be reviewed and published shortly.</p>
+    <div class="success-actions">
+      <button class="btn primary" (click)="resetForm()">Submit Another Event</button>
+      <a routerLink="/" class="btn secondary">Back to Calendar</a>
+    </div>
+  </div>
+
+  <!-- FORM STATE -->
+  <div *ngIf="!submitted()">
+    <div class="hero">
+      <h2>Submit Your Event</h2>
+      <p>Add your event to the QU Calendar community hub.</p>
+    </div>
+
+    <form class="submit-form" (ngSubmit)="onSubmit()">
+
+      <!-- ERROR MESSAGE -->
+      <div class="error-banner" *ngIf="error()">
+        ⚠️ {{ error() }}
+      </div>
+
+      <!-- BASIC INFO -->
+      <div class="form-section">
+        <h3>Basic Information</h3>
+
+        <div class="form-group">
+          <label>Event Name *</label>
+          <input type="text" [(ngModel)]="form.name" name="name"
+                 placeholder="e.g. Spring Fling Drag Brunch">
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea [(ngModel)]="form.description" name="description" rows="4"
+                    placeholder="Tell us about your event..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <app-image-upload
+            folder="events"
+            label="Event Image / Flyer"
+            (imageUrlChange)="form.eventImageUrl = $event">
+          </app-image-upload>
+        </div>
+      </div>
+
+      <!-- DATE & TIME -->
+      <div class="form-section">
+        <h3>Date & Time</h3>
+
+        <div class="form-group checkbox-group">
+          <label>
+            <input type="checkbox" [checked]="form.isMultiDay" (change)="onMultiDayToggle()" name="isMultiDay">
+            This is a multi-day event
+          </label>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>{{ form.isMultiDay ? 'Start Date' : 'Date' }} *</label>
+            <input type="date" [(ngModel)]="form.date" name="date">
+          </div>
+          <div class="form-group" *ngIf="form.isMultiDay">
+            <label>End Date *</label>
+            <input type="date" [(ngModel)]="form.endDate" name="endDate" [min]="form.date">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Start Time *</label>
+            <input type="text" [(ngModel)]="form.startTime" name="startTime"
+                   placeholder="e.g. 7:00 PM">
+          </div>
+          <div class="form-group">
+            <label>End Time</label>
+            <input type="text" [(ngModel)]="form.endTime" name="endTime"
+                   placeholder="e.g. 11:00 PM">
+          </div>
+          <div class="form-group">
+            <label>Price</label>
+            <input type="text" [(ngModel)]="form.price" name="price"
+                   placeholder="e.g. $15 or Free">
+          </div>
+        </div>
+      </div>
+
+      <!-- CATEGORIES -->
+      <div class="form-section">
+        <h3>Categories *</h3>
+        <span class="field-hint">Select all that apply</span>
+        <div class="category-grid">
+          <div class="category-item"
+               *ngFor="let cat of allCategories"
+               (click)="toggleCategory(cat)"
+               [class.selected]="isCategorySelected(cat)"
+               [class.auto-selected]="cat === 'Multi-Day' && form.isMultiDay">
+            <div class="cat-icon">{{ getCategoryIcon(cat) }}</div>
+            <div class="cat-label">{{ cat }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VENUE -->
+      <div class="form-section">
+        <h3>Venue *</h3>
+
+        <div class="form-group">
+          <label>Select Venue</label>
+          <select [(ngModel)]="form.venueId" name="venueId" (ngModelChange)="onVenueChange()">
+            <option value="">-- Select a Venue --</option>
+            <option *ngFor="let venue of venues()" [value]="venue.id">
+              {{ venue.name }} — {{ venue.city }}, {{ venue.state }}
+            </option>
+          </select>
+          <span class="field-hint">Don't see your venue? <a routerLink="/submit/venue">Submit it first.</a></span>
+        </div>
+
+        <div class="venue-preview" *ngIf="form.venueName">
+          <span class="venue-preview-name">📍 {{ form.venueName }}</span>
+          <span class="venue-preview-address">{{ form.venueAddress }}</span>
+          <span class="venue-preview-accessible" *ngIf="form.isAccessible">♿ Wheelchair Accessible</span>
+        </div>
+      </div>
+
+      <!-- PERFORMERS -->
+      <div class="form-section">
+        <h3>Performers</h3>
+        <span class="field-hint">Select all artists performing at this event</span>
+
+        <div class="artist-grid" *ngIf="artists().length > 0">
+          <div class="artist-item"
+               *ngFor="let artist of artists()"
+               (click)="toggleArtist(artist)"
+               [class.selected]="isArtistSelected(artist.id)">
+            <span class="artist-emoji">{{ artist.avatarEmoji }}</span>
+            <span class="artist-name">{{ artist.name }}</span>
+          </div>
+        </div>
+
+        <p class="no-artists" *ngIf="artists().length === 0">
+          No artists in the directory yet.
+          <a routerLink="/submit/artist">Submit an artist first.</a>
+        </p>
+
+        <div class="selected-artists" *ngIf="form.artistNames.length > 0">
+          <span class="selected-label">Selected:</span>
+          <span class="selected-artist" *ngFor="let name of form.artistNames">{{ name }}</span>
+        </div>
+      </div>
+
+      <!-- CONTACT & TICKETS -->
+      <div class="form-section">
+        <h3>Contact & Tickets</h3>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Contact Email</label>
+            <input type="email" [(ngModel)]="form.contactEmail" name="contactEmail"
+                   placeholder="info@yourevent.com">
+          </div>
+          <div class="form-group">
+            <label>Contact Phone</label>
+            <input type="tel" [(ngModel)]="form.contactPhone" name="contactPhone"
+                   placeholder="(513) 555-0000">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Ticket URL</label>
+          <input type="url" [(ngModel)]="form.ticketUrl" name="ticketUrl"
+                 placeholder="https://eventbrite.com/your-event">
+        </div>
+
+        <div class="form-group checkbox-group">
+          <label>
+            <input type="checkbox" [(ngModel)]="form.isAccessible" name="isAccessible">
+            This event is wheelchair accessible
+          </label>
+        </div>
+      </div>
+
+      <!-- SUBMIT -->
+      <div class="form-actions">
+        <button type="submit" class="btn primary" [disabled]="submitting()">
+          {{ submitting() ? 'Submitting...' : 'Submit Event' }}
+        </button>
+        <a routerLink="/" class="btn secondary">Cancel</a>
+      </div>
+
+    </form>
+  </div>
+</div>

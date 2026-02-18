@@ -1,3 +1,4 @@
+import { SubmitEventComponent } from './submit-event/submit-event';
 import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home';
 import { VenuesComponent } from './venues/venues';
@@ -11,5 +12,6 @@ export const routes: Routes = [
   { path: 'profile/:type/:id', component: ProfileComponent },
   { path: 'submit/venue', component: SubmitVenueComponent },
   { path: 'submit/artist', component: SubmitArtistComponent },
+  { path: 'submit/event', component: SubmitEventComponent },
   { path: '**', redirectTo: '' }
 ];
