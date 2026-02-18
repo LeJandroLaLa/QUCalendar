@@ -39,12 +39,12 @@
      [routerLink]="['/profile/events', event.id]"
      class="event-list-item">
     <div class="list-date-col">
-      <div class="list-date-number">{{ event.dayNumber }}</div>
-      <div class="list-date-month">{{ event.month }}</div>
+      <div class="list-date-number">{{ getDayNumber(event.date) }}</div>
+      <div class="list-date-month">{{ getMonth(event.date) }}</div>
     </div>
     <div class="list-time-col">
       <div class="list-time">{{ event.startTime }}</div>
-      <div class="list-day">{{ event.dayOfWeek }}</div>
+      <div class="list-day">{{ getDayOfWeek(event.date) }}</div>
     </div>
     <div class="list-info-col">
       <div class="list-title">{{ event.name }}</div>
@@ -58,7 +58,8 @@
 </div>
 
 <!-- NO RESULTS -->
-<div *ngIf="(viewMode === 'calendar' && dayGroups().length === 0) || (viewMode === 'list' && flatEvents().length === 0)"
+<div *ngIf="(viewMode === 'calendar' && dayGroups().length === 0) ||
+            (viewMode === 'list' && flatEvents().length === 0)"
      class="no-events">
   <p>No events match your filters.</p>
   <p class="no-events-hint">Try adjusting your location, date, or category filters.</p>

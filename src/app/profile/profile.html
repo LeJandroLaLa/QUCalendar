@@ -2,24 +2,23 @@
 
   <!-- BANNER -->
   <div class="profile-banner">
-    <img *ngIf="p.bannerImage" [src]="p.bannerImage" [alt]="p.name + ' banner'">
+    <img *ngIf="getDisplayImageUrl()" [src]="getDisplayImageUrl()" [alt]="p.name + ' banner'">
     <span class="profile-type-badge">{{ getProfileTypeBadge() }}</span>
   </div>
 
   <!-- HEADER CARD -->
   <div class="profile-header-card">
     <div class="profile-avatar">
-      <img *ngIf="p.avatarImage" [src]="p.avatarImage" [alt]="p.name">
-      <span *ngIf="!p.avatarImage">{{ p.avatarEmoji }}</span>
+      <span>{{ getDisplayAvatarEmoji() }}</span>
     </div>
     <div class="profile-info">
       <h2 class="profile-name">{{ p.name }}</h2>
-      <p class="profile-tagline">{{ p.tagline }}</p>
+      <p class="profile-tagline">{{ getDisplayTagline() }}</p>
       <div class="profile-tags">
-        <span class="profile-tag" *ngFor="let tag of p.tags">{{ tag }}</span>
+        <span class="profile-tag" *ngFor="let tag of getDisplayTags()">{{ tag }}</span>
       </div>
       <div class="profile-social-links">
-        <a *ngFor="let link of p.socialLinks"
+        <a *ngFor="let link of getDisplaySocialLinks()"
            [href]="link.url"
            class="social-link"
            target="_blank"
@@ -39,12 +38,12 @@
       <h3>Date & Time</h3>
       <div class="event-datetime">
         <div class="event-date-box">
-          <div class="event-date-number">{{ event.dayNumber }}</div>
-          <div class="event-date-month">{{ event.month }}</div>
+          <div class="event-date-number">{{ getDayNumber(event.date) }}</div>
+          <div class="event-date-month">{{ getMonth(event.date) }}</div>
         </div>
         <div class="event-time-info">
           <div class="event-time-display">{{ event.startTime }} — {{ event.endTime }}</div>
-          <div class="event-day-name">{{ event.dayOfWeek }}, {{ event.fullDate }}</div>
+          <div class="event-day-name">{{ getDayOfWeek(event.date) }}, {{ getFullDate(event.date) }}</div>
         </div>
         <div class="event-price">{{ event.price }}</div>
       </div>
@@ -84,7 +83,7 @@
       </ul>
     </div>
 
-    <div class="detail-card" *ngIf="event.artistNames.length > 0">
+    <div class="detail-card" *ngIf="event.artistNames && event.artistNames.length > 0">
       <h3>Performers</h3>
       <ul class="contact-list">
         <li *ngFor="let artistName of event.artistNames; let i = index">
@@ -113,10 +112,10 @@
     <div class="detail-card">
       <h3>Location & Access</h3>
       <ul class="contact-list">
-        <li><span class="icon">🏠</span> {{ venue.address }}, {{ venue.city }}, {{ venue.state }} {{ venue.zip }}</li>
+        <li><span class="icon">🏠</span> {{ venue.address }}, {{ venue.city }}, {{ venue.state }} {{ venue.zipCode }}</li>
         <li *ngIf="venue.isAccessible"><span class="icon">♿</span> Wheelchair Accessible</li>
-        <li><span class="icon">🅿️</span> {{ venue.parking }}</li>
-        <li><span class="icon">🚌</span> {{ venue.transit }}</li>
+        <li *ngIf="venue.parking"><span class="icon">🅿️</span> {{ venue.parking }}</li>
+        <li *ngIf="venue.transit"><span class="icon">🚌</span> {{ venue.transit }}</li>
       </ul>
       <div class="map-placeholder">
         🗺️ Map will go here
@@ -206,14 +205,12 @@
          [routerLink]="['/profile/events', evt.id]"
          class="related-event-card">
         <div class="related-event-date">
-          {{ evt.dayOfWeek | uppercase | slice:0:3 }} {{ evt.month }} {{ evt.dayNumber }}, {{ evt.fullDate.split(', ')[1] }} • {{ evt.startTime }}
+          {{ getDayOfWeek(evt.date) | uppercase | slice:0:3 }} {{ getMonth(evt.date) }} {{ getDayNumber(evt.date) }}, {{ getYear(evt.date) }} • {{ evt.startTime }}
         </div>
         <div class="related-event-title">{{ evt.name }}</div>
         <div class="related-event-venue">{{ evt.venueName }}</div>
         <div class="related-event-icons">
-          <span *ngFor="let tag of evt.tags | slice:0:3">
-            {{ tag }}
-          </span>
+          <span *ngFor="let cat of evt.category | slice:0:3">{{ cat }}</span>
         </div>
       </a>
     </div>
@@ -229,7 +226,7 @@
          [routerLink]="['/profile/events', evt.id]"
          class="related-event-card past">
         <div class="related-event-date">
-          {{ evt.dayOfWeek | uppercase | slice:0:3 }} {{ evt.month }} {{ evt.dayNumber }}, {{ evt.fullDate.split(', ')[1] }} • {{ evt.startTime }}
+          {{ getDayOfWeek(evt.date) | uppercase | slice:0:3 }} {{ getMonth(evt.date) }} {{ getDayNumber(evt.date) }}, {{ getYear(evt.date) }} • {{ evt.startTime }}
         </div>
         <div class="related-event-title">{{ evt.name }}</div>
         <div class="related-event-venue">{{ evt.venueName }}</div>

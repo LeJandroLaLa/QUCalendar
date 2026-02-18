@@ -1,9 +1,10 @@
-import { Component, signal, computed, OnInit } from '@angular/core';
+import { Component, signal, computed, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ProfileService } from '../services/profile.service';
 import { VenueProfile, VenueType } from '../models/profile.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-venues',
@@ -12,17 +13,15 @@ import { VenueProfile, VenueType } from '../models/profile.model';
   templateUrl: './venues.html',
   styleUrl: './venues.css'
 })
-export class VenuesComponent implements OnInit {
-  private profileService = new ProfileService();
+export class VenuesComponent implements OnInit, OnDestroy {
+  private profileService = inject(ProfileService);
+  private subscriptions: Subscription[] = [];
 
-  // Filter state
   locationQuery = signal('');
   selectedTypes = signal<VenueType[]>([]);
-
-  // All venues from service
   allVenues = signal<VenueProfile[]>([]);
+  upcomingEventCounts = signal<Record<string, number>>({});
 
-  // Venue type definitions with icons
   venueTypes: { type: VenueType; icon: string }[] = [
     { type: 'Restaurant', icon: '🍽️' },
     { type: 'Theatre', icon: '🎭' },
@@ -35,7 +34,6 @@ export class VenuesComponent implements OnInit {
     { type: 'Private Venue', icon: '🔒' },
   ];
 
-  // US state name lookup for location search
   private stateNames: Record<string, string> = {
     'AL': 'alabama', 'AK': 'alaska', 'AZ': 'arizona', 'AR': 'arkansas',
     'CA': 'california', 'CO': 'colorado', 'CT': 'connecticut', 'DE': 'delaware',
@@ -52,34 +50,23 @@ export class VenuesComponent implements OnInit {
     'WI': 'wisconsin', 'WY': 'wyoming', 'DC': 'district of columbia'
   };
 
-  // Computed filtered venues
   filteredVenues = computed(() => {
     let venues = this.allVenues();
     const loc = this.locationQuery().toLowerCase().trim();
     const types = this.selectedTypes();
 
-    // Location filter
     if (loc) {
       venues = venues.filter(v => {
-        const name = v.name.toLowerCase();
-        const city = v.city.toLowerCase();
-        const state = v.state.toLowerCase();
-        const zip = v.zip;
-        const address = v.address.toLowerCase();
-
-        // Check state full name match
         const stateFullName = this.stateNames[v.state.toUpperCase()] || '';
-
-        return name.includes(loc) ||
-               city.includes(loc) ||
-               state.includes(loc) ||
+        return v.name.toLowerCase().includes(loc) ||
+               v.city.toLowerCase().includes(loc) ||
+               v.state.toLowerCase().includes(loc) ||
                stateFullName.includes(loc) ||
-               zip.includes(loc) ||
-               address.includes(loc);
+               v.zipCode.includes(loc) ||
+               v.address.toLowerCase().includes(loc);
       });
     }
 
-    // Type filter
     if (types.length > 0) {
       venues = venues.filter(v => types.includes(v.venueType));
     }
@@ -87,15 +74,31 @@ export class VenuesComponent implements OnInit {
     return venues;
   });
 
-  // Count of upcoming events per venue
   getUpcomingEventCount(venueId: string): number {
-    const today = new Date().toISOString().split('T')[0];
-    return this.profileService.getEventsByVenue(venueId)
-      .filter(e => e.date >= today).length;
+    return this.upcomingEventCounts()[venueId] || 0;
   }
 
-  ngOnInit() {
-    this.allVenues.set(this.profileService.getAllVenues());
+  ngOnInit(): void {
+    const venuesSub = this.profileService.getAllVenues().subscribe(venues => {
+      this.allVenues.set(venues);
+    });
+    this.subscriptions.push(venuesSub);
+
+    const today = new Date().toISOString().split('T')[0];
+    const eventsSub = this.profileService.getAllEvents().subscribe(events => {
+      const counts: Record<string, number> = {};
+      for (const event of events) {
+        if (event.date >= today && event.venueId) {
+          counts[event.venueId] = (counts[event.venueId] || 0) + 1;
+        }
+      }
+      this.upcomingEventCounts.set(counts);
+    });
+    this.subscriptions.push(eventsSub);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(s => s.unsubscribe());
   }
 
   toggleType(type: VenueType): void {

@@ -1,8 +1,9 @@
-import { Component, OnInit, OnChanges, SimpleChanges, Input, signal } from '@angular/core';
+import { Component, OnInit, OnChanges, SimpleChanges, Input, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ProfileService } from '../services/profile.service';
 import { EventProfile } from '../models/profile.model';
+import { Subscription } from 'rxjs';
 
 interface DayGroup {
   date: string;
@@ -20,7 +21,7 @@ interface DayGroup {
   templateUrl: './events.html',
   styleUrl: './events.css'
 })
-export class EventsComponent implements OnInit, OnChanges {
+export class EventsComponent implements OnInit, OnChanges, OnDestroy {
   @Input() locationFilter: string = '';
   @Input() dateFilter: string = '';
   @Input() categoryFilter: string[] = [];
@@ -28,6 +29,9 @@ export class EventsComponent implements OnInit, OnChanges {
 
   dayGroups = signal<DayGroup[]>([]);
   flatEvents = signal<EventProfile[]>([]);
+
+  private allEvents: EventProfile[] = [];
+  private subscription?: Subscription;
 
   categoryIcons: Record<string, string> = {
     'Nightlife': '🌟', 'Drag': '💃', 'Fashion': '👕', 'Fundraiser': '💰',
@@ -42,52 +46,65 @@ export class EventsComponent implements OnInit, OnChanges {
     return this.categoryIcons[category] || '🏷️';
   }
 
+  // Date helpers — computed from ISO date string, no stored fields needed
+  getDayNumber(dateStr: string): number {
+    return new Date(dateStr + 'T00:00:00').getDate();
+  }
+
+  getMonth(dateStr: string): string {
+    const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+    return months[new Date(dateStr + 'T00:00:00').getMonth()];
+  }
+
+  getDayOfWeek(dateStr: string): string {
+    const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    return days[new Date(dateStr + 'T00:00:00').getDay()];
+  }
+
+  getFullDate(dateStr: string): string {
+    const d = new Date(dateStr + 'T00:00:00');
+    const months = ['January','February','March','April','May','June',
+                    'July','August','September','October','November','December'];
+    return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+  }
+
   constructor(private profileService: ProfileService) {}
 
   ngOnInit(): void {
-    this.applyFilters();
+    this.subscription = this.profileService.getUpcomingEvents().subscribe(events => {
+      this.allEvents = events;
+      this.applyFilters();
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     this.applyFilters();
   }
 
-  private applyFilters(): void {
-    let events = this.profileService.getUpcomingEvents();
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
+  }
 
-    // Location filter — matches venue name, address, city, state, or zip
+  private applyFilters(): void {
+    let events = [...this.allEvents];
+
+    // Location filter
     if (this.locationFilter && this.locationFilter.trim()) {
       const q = this.locationFilter.toLowerCase().trim();
-      events = events.filter(e => {
-        // Check event-level fields first
-        if (e.venueName.toLowerCase().includes(q) ||
-            e.venueAddress.toLowerCase().includes(q)) {
-          return true;
-        }
-        // Also check the venue's dedicated city/state/zip if available
-        const venue = this.profileService.getVenueById(e.venueId);
-        if (venue) {
-          return venue.city.toLowerCase().includes(q) ||
-                 venue.state.toLowerCase().includes(q) ||
-                 venue.zip.includes(q) ||
-                 // Match full state names
-                 this.matchStateName(q, venue.state);
-        }
-        return false;
-      });
+      events = events.filter(e =>
+        e.venueName.toLowerCase().includes(q) ||
+        e.venueAddress.toLowerCase().includes(q)
+      );
     }
 
     // Date filter
     if (this.dateFilter) {
       if (this.dateFilter === 'weekend') {
-        // Show events on the next Saturday + Sunday
         events = events.filter(e => {
-          const d = new Date(e.date + 'T00:00:00');
-          const day = d.getDay();
-          return day === 0 || day === 6; // Sunday = 0, Saturday = 6
+          const day = new Date(e.date + 'T00:00:00').getDay();
+          return day === 0 || day === 6;
         });
       } else if (this.dateFilter.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
-        // Specific date: mm/dd/yyyy → yyyy-mm-dd
         const parts = this.dateFilter.split('/');
         const isoDate = `${parts[2]}-${parts[0]}-${parts[1]}`;
         events = events.filter(e => e.date === isoDate);
@@ -101,12 +118,8 @@ export class EventsComponent implements OnInit, OnChanges {
       );
     }
 
-    // Store flat list for list view
     this.flatEvents.set(events);
-
-    // Group by day for calendar view
-    const groups = this.groupByDay(events);
-    this.dayGroups.set(groups);
+    this.dayGroups.set(this.groupByDay(events));
   }
 
   private groupByDay(events: EventProfile[]): DayGroup[] {
@@ -121,44 +134,21 @@ export class EventsComponent implements OnInit, OnChanges {
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([date, evts]) => ({
         date,
-        dayNumber: evts[0].dayNumber,
-        month: evts[0].month,
-        dayOfWeek: evts[0].dayOfWeek,
-        fullDate: evts[0].fullDate,
+        dayNumber: this.getDayNumber(date),
+        month: this.getMonth(date),
+        dayOfWeek: this.getDayOfWeek(date),
+        fullDate: this.getFullDate(date),
         events: evts,
       }));
   }
 
   calculateStardate(dateStr: string, time: string): string {
-    const year = new Date(dateStr).getFullYear();
+    const year = new Date(dateStr + 'T00:00:00').getFullYear();
     const start = new Date(year, 0, 0);
-    const diff = new Date(dateStr).getTime() - start.getTime();
-    const oneDay = 1000 * 60 * 60 * 24;
-    const dayOfYear = Math.floor(diff / oneDay);
+    const diff = new Date(dateStr + 'T00:00:00').getTime() - start.getTime();
+    const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hourFraction = this.parseTimeToFraction(time);
-    const stardate = (year * 10 + (dayOfYear / 365) * 10 + hourFraction).toFixed(2);
-    return stardate;
-  }
-
-  private stateNames: Record<string, string> = {
-    'OH': 'ohio', 'KY': 'kentucky', 'IN': 'indiana', 'PA': 'pennsylvania',
-    'WV': 'west virginia', 'MI': 'michigan', 'IL': 'illinois', 'TN': 'tennessee',
-    'VA': 'virginia', 'NC': 'north carolina', 'GA': 'georgia', 'FL': 'florida',
-    'NY': 'new york', 'CA': 'california', 'TX': 'texas', 'WA': 'washington',
-    'OR': 'oregon', 'CO': 'colorado', 'MA': 'massachusetts', 'CT': 'connecticut',
-    'NJ': 'new jersey', 'MD': 'maryland', 'DC': 'district of columbia',
-    'MN': 'minnesota', 'WI': 'wisconsin', 'MO': 'missouri', 'IA': 'iowa',
-    'SC': 'south carolina', 'AL': 'alabama', 'LA': 'louisiana', 'MS': 'mississippi',
-    'AR': 'arkansas', 'OK': 'oklahoma', 'KS': 'kansas', 'NE': 'nebraska',
-    'SD': 'south dakota', 'ND': 'north dakota', 'MT': 'montana', 'WY': 'wyoming',
-    'ID': 'idaho', 'UT': 'utah', 'NV': 'nevada', 'AZ': 'arizona', 'NM': 'new mexico',
-    'AK': 'alaska', 'HI': 'hawaii', 'ME': 'maine', 'NH': 'new hampshire',
-    'VT': 'vermont', 'RI': 'rhode island', 'DE': 'delaware',
-  };
-
-  private matchStateName(query: string, stateAbbr: string): boolean {
-    const fullName = this.stateNames[stateAbbr.toUpperCase()];
-    return fullName ? fullName.includes(query) : false;
+    return (year * 10 + (dayOfYear / 365) * 10 + hourFraction).toFixed(2);
   }
 
   private parseTimeToFraction(time: string): number {
